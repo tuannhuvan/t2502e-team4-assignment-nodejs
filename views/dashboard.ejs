@@ -8,7 +8,79 @@
 <body>
   <div class="page">
 
-    <%- include('partials/header') %>
+    <%
+  const members = [
+    {
+      name: "Nhữ Văn Tuấn",
+      role: "Leader",
+      github: "tuannhuvan",
+      dob: "2000-01-15"
+    },
+    {
+      name: "Nguyễn Hữu Trí",
+      role: "Member",
+      github: "Ooloobooloo",
+      dob: "2000-08-10"
+    },
+    {
+      name: "Nguyễn Văn Linh",
+      role: "Member",
+      github: "nhoi03",
+      dob: "2004-03-23"
+    },
+    {
+      name: "Nguyễn Xuân Tùng",
+      role: "Member",
+      github: "XuanTung2493",
+      dob: "2000-05-12"
+    }
+  ];
+
+  function getAge(dob) {
+    const birth = new Date(dob);
+    const today = new Date();
+    return today.getFullYear() - birth.getFullYear();
+  }
+
+  const tasks = [
+    {
+      id: 1,
+      title: "Design login page",
+      assignee: "Nguyễn Xuân Tùng",
+      deadline: "2026-04-10",
+      priority: "High",
+      status: "todo"
+    },
+    {
+      id: 2,
+      title: "Build dashboard UI",
+      assignee: "Nhữ Văn Tuấn",
+      deadline: "2026-04-12",
+      priority: "Medium",
+      status: "inprogress"
+    },
+    {
+      id: 3,
+      title: "Task detail page",
+      assignee: "Nguyễn Hữu Trí",
+      deadline: "2026-04-11",
+      priority: "High",
+      status: "inprogress"
+    },
+    {
+      id: 4,
+      title: "Setup project",
+      assignee: "Nguyễn Văn Linh",
+      deadline: "2026-04-08",
+      priority: "Low",
+      status: "done"
+    }
+  ];
+
+  const totalTasks = tasks.length;
+  const inProgressTasks = tasks.filter(t => t.status === "inprogress").length;
+  const doneTasks = tasks.filter(t => t.status === "done").length;
+%>
 
     <section class="stats">
       <div class="stat-card">
