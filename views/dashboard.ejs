@@ -154,7 +154,7 @@
         <h2>To Do</h2>
 
         <% tasks.filter(task => task.status === "todo").forEach(task => { %>
-          <a href="/task-detail" class="task-link">
+          <a href="/task/<%= task.id %>" class="task-link">
             <div class="task-card">
               <h4><%= task.title %></h4>
               <p>👤 <%= task.assignee %></p>
@@ -169,7 +169,7 @@
         <h2>In Progress</h2>
 
         <% tasks.filter(task => task.status === "inprogress").forEach(task => { %>
-          <a href="/task-detail" class="task-link">
+          <a href="/task/<%= task.id %>" class="task-link">
             <div class="task-card">
               <h4><%= task.title %></h4>
               <p>👤 <%= task.assignee %></p>
@@ -184,7 +184,7 @@
         <h2>Done</h2>
 
         <% tasks.filter(task => task.status === "done").forEach(task => { %>
-          <a href="/task-detail" class="task-link">
+          <a href="/task/<%= task.id %>" class="task-link">
             <div class="task-card">
               <h4><%= task.title %></h4>
               <p>👤 <%= task.assignee %></p>

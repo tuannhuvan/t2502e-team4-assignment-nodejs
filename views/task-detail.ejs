@@ -15,7 +15,12 @@
     <div class="detail-layout">
       <section class="task-detail-card">
         <div class="detail-header">
-          <h2>Build dashboard UI</h2>
+          <h2><%= task.title %></h2>
+
+<p><strong>Status:</strong> <%= task.status %></p>
+<p><strong>Assignee:</strong> <%= task.assignee %></p>
+<p><strong>Deadline:</strong> <%= task.deadline %></p>
+<p><strong>Priority:</strong> <%= task.priority %></p>
           <span class="priority medium">Medium</span>
         </div>
 
