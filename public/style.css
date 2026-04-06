@@ -6,37 +6,58 @@ body {
   margin: 0;
   font-family: "Segoe UI", Arial, sans-serif;
   color: #1f2937;
-  background:
-    url("public/images/background.jpg");
-  background-size: cover;
-  background-position: center;
-  background-attachment: fixed;
-  background-repeat: no-repeat;
+  background: #f5f7fb;
 }
 
 .page {
   max-width: 1440px;
   margin: 0 auto;
   padding: 32px 24px 40px;
+  position: relative;
+}
+
+/* Hero background at top only */
+.page::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 360px;
+  border-radius: 0 0 28px 28px;
+  background:
+    linear-gradient(rgba(6, 18, 48, 0.68), rgba(6, 18, 48, 0.42)),
+    url("/images/background.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  z-index: 0;
+}
+
+.page > * {
+  position: relative;
+  z-index: 1;
 }
 
 /* Header */
 .topbar {
   margin-bottom: 8px;
+  padding-top: 4px;
 }
 
 .topbar h1 {
   margin: 0;
   font-size: 52px;
   font-weight: 800;
-  color: #111827;
+  color: #ffffff;
   letter-spacing: -1px;
+  text-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
 }
 
 .page-subtitle {
   margin: 0 0 28px;
   font-size: 18px;
-  color: #94a3b8;
+  color: #dbeafe;
 }
 
 /* Section titles */
@@ -74,7 +95,7 @@ body {
 .task-detail-card,
 .comment-section,
 .comment-item {
-  background: #ffffff;
+  background: rgba(255, 255, 255, 0.96);
   border: 1px solid #e5e7eb;
   border-radius: 22px;
   box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
@@ -103,7 +124,7 @@ body {
 }
 
 .team-card h3 {
-  margin: 0 0 14px;
+  margin: 0;
   font-size: 18px;
   color: #111827;
 }
@@ -117,6 +138,23 @@ body {
 .leader-card {
   border: 2px solid #f97316;
   box-shadow: 0 10px 24px rgba(249, 115, 22, 0.12);
+}
+
+/* Member avatar */
+.member-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.member-avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #f1f5f9;
+  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.12);
 }
 
 /* Stats */
@@ -162,7 +200,7 @@ body {
 .column {
   flex: 1;
   padding: 18px;
-  background: #f9fafb;
+  background: rgba(249, 250, 251, 0.96);
   transition: all 0.25s ease;
 }
 
@@ -379,19 +417,8 @@ body {
   .page {
     padding: 20px 16px 32px;
   }
-}
-.member-header {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 14px;
-}
 
-.member-avatar {
-  width: 52px;
-  height: 52px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid #f1f5f9;
-  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.12);
+  .page::before {
+    height: 280px;
+  }
 }
