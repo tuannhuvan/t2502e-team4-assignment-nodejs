@@ -1,14 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>TaskFlow Dashboard</title>
-  <link rel="stylesheet" href="/style.css">
-</head>
-<body>
-  <div class="page">
-
-    <%
+<%
   const members = [
     {
       name: "Nhữ Văn Tuấn",
@@ -39,7 +29,15 @@
   function getAge(dob) {
     const birth = new Date(dob);
     const today = new Date();
-    return today.getFullYear() - birth.getFullYear();
+    let age = today.getFullYear() - birth.getFullYear();
+    const monthDiff = today.getMonth() - birth.getMonth();
+    const dayDiff = today.getDate() - birth.getDate();
+
+    if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
+      age--;
+    }
+
+    return age;
   }
 
   const tasks = [
@@ -61,7 +59,7 @@
     },
     {
       id: 3,
-      title: "Task detail page",
+      title: "Create task detail page",
       assignee: "Nguyễn Hữu Trí",
       deadline: "2026-04-11",
       priority: "High",
@@ -69,38 +67,85 @@
     },
     {
       id: 4,
-      title: "Setup project",
+      title: "Setup project structure",
       assignee: "Nguyễn Văn Linh",
       deadline: "2026-04-08",
+      priority: "Low",
+      status: "done"
+    },
+    {
+      id: 5,
+      title: "Style kanban board",
+      assignee: "Nguyễn Xuân Tùng",
+      deadline: "2026-04-13",
+      priority: "Medium",
+      status: "todo"
+    },
+    {
+      id: 6,
+      title: "Prepare comment section UI",
+      assignee: "Nguyễn Văn Linh",
+      deadline: "2026-04-14",
       priority: "Low",
       status: "done"
     }
   ];
 
   const totalTasks = tasks.length;
-  const inProgressTasks = tasks.filter(t => t.status === "inprogress").length;
-  const doneTasks = tasks.filter(t => t.status === "done").length;
+  const overdueTasks = tasks.filter(task => new Date(task.deadline) < new Date()).length;
+  const inProgressTasks = tasks.filter(task => task.status === "inprogress").length;
+  const doneTasks = tasks.filter(task => task.status === "done").length;
 %>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TaskFlow Dashboard</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div class="page">
+
+    <%- include('partials/header') %>
+    <p class="page-subtitle">Dashboard + Kanban Board</p>
+
+    <section class="team">
+      <h2>👥 Team Members</h2>
+
+      <div class="team-list">
+        <% members.forEach(member => { %>
+          <div class="team-card <%= member.role === 'Leader' ? 'leader-card' : '' %>">
+            <h3><%= member.name %></h3>
+            <p><strong>Role:</strong> <%= member.role %></p>
+            <p><strong>GitHub:</strong> <%= member.github %></p>
+            <p><strong>DOB:</strong> <%= member.dob %></p>
+            <p><strong>Age:</strong> <%= getAge(member.dob) %></p>
+          </div>
+        <% }) %>
+      </div>
+    </section>
 
     <section class="stats">
       <div class="stat-card">
         <h3>Total Tasks</h3>
-        <p>12</p>
+        <p><%= totalTasks %></p>
       </div>
 
       <div class="stat-card">
         <h3>Overdue</h3>
-        <p>3</p>
+        <p><%= overdueTasks %></p>
       </div>
 
       <div class="stat-card">
         <h3>In Progress</h3>
-        <p>4</p>
+        <p><%= inProgressTasks %></p>
       </div>
 
       <div class="stat-card">
         <h3>Done</h3>
-        <p>5</p>
+        <p><%= doneTasks %></p>
       </div>
     </section>
 
@@ -108,40 +153,46 @@
       <div class="column">
         <h2>To Do</h2>
 
-        <a href="/task-detail" class="task-link">
-          <div class="task-card">
-            <h4>Design login page</h4>
-            <p>👤 Tung</p>
-            <p>📅 2026-04-10</p>
-            <span class="priority high">High</span>
-          </div>
-        </a>
+        <% tasks.filter(task => task.status === "todo").forEach(task => { %>
+          <a href="/task-detail" class="task-link">
+            <div class="task-card">
+              <h4><%= task.title %></h4>
+              <p>👤 <%= task.assignee %></p>
+              <p>📅 <%= task.deadline %></p>
+              <span class="priority <%= task.priority.toLowerCase() %>"><%= task.priority %></span>
+            </div>
+          </a>
+        <% }) %>
       </div>
 
       <div class="column">
         <h2>In Progress</h2>
 
-        <a href="/task-detail" class="task-link">
-          <div class="task-card">
-            <h4>Build dashboard UI</h4>
-            <p>👤 Team 4</p>
-            <p>📅 2026-04-12</p>
-            <span class="priority medium">Medium</span>
-          </div>
-        </a>
+        <% tasks.filter(task => task.status === "inprogress").forEach(task => { %>
+          <a href="/task-detail" class="task-link">
+            <div class="task-card">
+              <h4><%= task.title %></h4>
+              <p>👤 <%= task.assignee %></p>
+              <p>📅 <%= task.deadline %></p>
+              <span class="priority <%= task.priority.toLowerCase() %>"><%= task.priority %></span>
+            </div>
+          </a>
+        <% }) %>
       </div>
 
       <div class="column">
         <h2>Done</h2>
 
-        <a href="/task-detail" class="task-link">
-          <div class="task-card">
-            <h4>Setup project</h4>
-            <p>👤 Team</p>
-            <p>📅 2026-04-08</p>
-            <span class="priority low">Low</span>
-          </div>
-        </a>
+        <% tasks.filter(task => task.status === "done").forEach(task => { %>
+          <a href="/task-detail" class="task-link">
+            <div class="task-card">
+              <h4><%= task.title %></h4>
+              <p>👤 <%= task.assignee %></p>
+              <p>📅 <%= task.deadline %></p>
+              <span class="priority <%= task.priority.toLowerCase() %>"><%= task.priority %></span>
+            </div>
+          </a>
+        <% }) %>
       </div>
     </section>
 

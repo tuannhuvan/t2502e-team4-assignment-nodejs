@@ -8,10 +8,9 @@
 </head>
 <body>
   <div class="page">
-    <header class="topbar">
-      <h1>📌 Task Detail</h1>
-      <p>View task information and comments</p>
-    </header>
+
+    <%- include('partials/header') %>
+    <p class="page-subtitle">Task Detail</p>
 
     <div class="detail-layout">
       <section class="task-detail-card">
@@ -22,17 +21,23 @@
 
         <div class="detail-info">
           <p><strong>Status:</strong> In Progress</p>
-          <p><strong>Assignee:</strong> Team 4</p>
+          <p><strong>Assignee:</strong> Nhữ Văn Tuấn</p>
+          <p><strong>Role:</strong> Team Leader</p>
           <p><strong>Deadline:</strong> 2026-04-12</p>
-          <p><strong>Project:</strong> TaskFlow</p>
+          <p><strong>Project:</strong> TaskFlow – Mini Trello</p>
         </div>
 
         <div class="detail-description">
           <h3>Description</h3>
           <p>
             Build the dashboard interface for the TaskFlow project, including
-            summary cards, kanban columns, and task cards layout.
+            summary statistic cards, kanban columns, task cards, and a clean
+            layout for team task management.
           </p>
+        </div>
+
+        <div class="detail-actions">
+          <a href="/dashboard" class="back-link">← Back to board</a>
         </div>
       </section>
 
@@ -41,13 +46,24 @@
 
         <div class="comment-list">
           <div class="comment-item">
-            <p class="comment-author">Tuan</p>
-            <p class="comment-text">Please update the overdue card color.</p>
+            <p class="comment-author">Nguyễn Xuân Tùng</p>
+            <p class="comment-text">
+              I finished the initial dashboard layout and basic kanban UI.
+            </p>
           </div>
 
           <div class="comment-item">
-            <p class="comment-author">Tung</p>
-            <p class="comment-text">I will finish the UI layout today.</p>
+            <p class="comment-author">Nguyễn Hữu Trí</p>
+            <p class="comment-text">
+              Please keep the task detail page consistent with the dashboard style.
+            </p>
+          </div>
+
+          <div class="comment-item">
+            <p class="comment-author">Nguyễn Văn Linh</p>
+            <p class="comment-text">
+              We should improve the member information and highlight the leader.
+            </p>
           </div>
         </div>
 
