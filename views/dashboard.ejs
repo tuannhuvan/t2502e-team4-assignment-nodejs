@@ -6,15 +6,10 @@
   <link rel="stylesheet" href="/style.css">
 </head>
 <body>
-
   <div class="page">
 
-    <header class="topbar">
-      <h1>🚀 TaskFlow</h1>
-      <p>Dashboard + Kanban Board</p>
-    </header>
+    <%- include('partials/header') %>
 
-    <!-- DASHBOARD -->
     <section class="stats">
       <div class="stat-card">
         <h3>Total Tasks</h3>
@@ -37,69 +32,47 @@
       </div>
     </section>
 
-    <!-- KANBAN -->
     <section class="board">
-
       <div class="column">
         <h2>To Do</h2>
 
         <a href="/task-detail" class="task-link">
-  <div class="task-card">
-    <h4>Design login page</h4>
-    <p>👤 Tung</p>
-    <p>📅 2026-04-10</p>
-    <span class="priority high">High</span>
-  </div>
-</a>
-          <h4>Design login page</h4>
-          <p>👤 Tung</p>
-          <p>📅 2026-04-10</p>
-          <span class="priority high">High</span>
-        </div>
-
+          <div class="task-card">
+            <h4>Design login page</h4>
+            <p>👤 Tung</p>
+            <p>📅 2026-04-10</p>
+            <span class="priority high">High</span>
+          </div>
+        </a>
       </div>
 
       <div class="column">
         <h2>In Progress</h2>
 
         <a href="/task-detail" class="task-link">
-  <div class="task-card">
-    <h4>Design login page</h4>
-    <p>👤 Tung</p>
-    <p>📅 2026-04-10</p>
-    <span class="priority high">High</span>
-  </div>
-</a>
-          <h4>Build dashboard UI</h4>
-          <p>👤 Team 4</p>
-          <p>📅 2026-04-12</p>
-          <span class="priority medium">Medium</span>
-        </div>
-
+          <div class="task-card">
+            <h4>Build dashboard UI</h4>
+            <p>👤 Team 4</p>
+            <p>📅 2026-04-12</p>
+            <span class="priority medium">Medium</span>
+          </div>
+        </a>
       </div>
 
       <div class="column">
         <h2>Done</h2>
 
         <a href="/task-detail" class="task-link">
-  <div class="task-card">
-    <h4>Design login page</h4>
-    <p>👤 Tung</p>
-    <p>📅 2026-04-10</p>
-    <span class="priority high">High</span>
-  </div>
-</a>
-          <h4>Setup project</h4>
-          <p>👤 Team</p>
-          <p>📅 2026-04-08</p>
-          <span class="priority low">Low</span>
-        </div>
-
+          <div class="task-card">
+            <h4>Setup project</h4>
+            <p>👤 Team</p>
+            <p>📅 2026-04-08</p>
+            <span class="priority low">Low</span>
+          </div>
+        </a>
       </div>
-
     </section>
 
   </div>
-
 </body>
 </html>
