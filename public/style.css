@@ -337,3 +337,45 @@ body {
   border-radius: 6px;
   font-size: 13px;
 }
+.task-link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+.task-card {
+  background: rgba(255, 255, 255, 0.08);
+  padding: 14px;
+  margin-bottom: 14px;
+  border-radius: 14px;
+  border: 1px solid transparent;
+  transition: all 0.25s ease;
+  cursor: pointer;
+}
+
+.task-link:hover .task-card {
+  transform: translateY(-4px);
+  border: 1px solid #7dd3fc;
+  box-shadow: 0 0 12px rgba(125, 211, 252, 0.35);
+}
+.task-link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+.task-card {
+  background: rgba(255, 255, 255, 0.08);
+  padding: 14px;
+  margin-bottom: 14px;
+  border-radius: 14px;
+  border: 1px solid transparent;
+  transition: all 0.25s ease;
+  cursor: pointer;
+}
+
+.task-link:hover .task-card {
+  transform: translateY(-4px);
+  border: 1px solid #7dd3fc;
+  box-shadow: 0 0 12px rgba(125, 211, 252, 0.35);
+}
