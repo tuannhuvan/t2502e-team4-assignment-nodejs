@@ -1,0 +1,65 @@
+body {
+  font-family: Arial;
+  background: #f5f6fa;
+  margin: 0;
+}
+
+.page {
+  padding: 20px;
+}
+
+.topbar {
+  margin-bottom: 20px;
+}
+
+.stats {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.stat-card {
+  background: white;
+  padding: 15px;
+  border-radius: 10px;
+  flex: 1;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.board {
+  display: flex;
+  gap: 20px;
+}
+
+.column {
+  flex: 1;
+  background: #ecf0f1;
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.task-card {
+  background: white;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 8px;
+}
+
+.priority {
+  padding: 3px 6px;
+  border-radius: 5px;
+  font-size: 12px;
+}
+
+.priority.low {
+  background: #dff9fb;
+}
+
+.priority.medium {
+  background: #f6e58d;
+}
+
+.priority.high {
+  background: #ff7979;
+  color: white;
+}
