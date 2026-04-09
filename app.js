@@ -163,3 +163,57 @@ app.get("/task/:id/edit", (req, res) => {
 
   res.render("task-edit", { task, users, projects });
 });
+
+app.get("/task/:id/delete", (req, res) => {
+  const tasks = [
+    {
+      id: 1,
+      projectId: 1,
+      title: "Collect requirements",
+      description: "Review assignment scope, ERD and task distribution for the team.",
+      status: "todo",
+      priority: "high",
+      assigneeId: 1,
+      deadline: "2026-04-10"
+    },
+    {
+      id: 2,
+      projectId: 1,
+      title: "Design dashboard UI",
+      description: "Build personal dashboard, stats cards and kanban layout with EJS.",
+      status: "in_progress",
+      priority: "medium",
+      assigneeId: 4,
+      deadline: "2026-04-12"
+    },
+    {
+      id: 3,
+      projectId: 1,
+      title: "Create task detail page",
+      description: "Prepare task detail UI with task information and comment section.",
+      status: "in_progress",
+      priority: "high",
+      assigneeId: 2,
+      deadline: "2026-04-11"
+    },
+    {
+      id: 4,
+      projectId: 1,
+      title: "Setup project structure",
+      description: "Organize views, partials, public assets and initial routing.",
+      status: "done",
+      priority: "low",
+      assigneeId: 3,
+      deadline: "2026-04-08"
+    }
+  ];
+
+  const taskId = parseInt(req.params.id, 10);
+  const task = tasks.find(item => item.id === taskId);
+
+  if (!task) {
+    return res.status(404).send("Task not found");
+  }
+
+  res.render("task-delete", { task });
+});
