@@ -17,6 +17,21 @@ app.get("/dashboard", (req, res) => {
   res.render("dashboard");
 });
 
+app.get("/task/create", (req, res) => {
+  const users = [
+    { id: 1, name: "Nhữ Văn Tuấn" },
+    { id: 2, name: "Nguyễn Hữu Trí" },
+    { id: 3, name: "Nguyễn Văn Linh" },
+    { id: 4, name: "Nguyễn Xuân Tùng" }
+  ];
+
+  const projects = [
+    { id: 1, name: "TaskFlow - Mini Trello" }
+  ];
+
+  res.render("task-create", { users, projects });
+});
+
 app.get("/task/:id", (req, res) => {
   const taskId = parseInt(req.params.id);
 
@@ -83,3 +98,4 @@ app.get("/task/:id", (req, res) => {
 app.listen(PORT, () => {
   console.log(`Server is running at http://localhost:${PORT}`);
 });
+

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Task - TaskFlow</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div class="page">
+    <%- include('partials/header') %>
+    <p class="page-subtitle">Create a new task for your project</p>
+
+    <section class="form-page">
+      <div class="form-card">
+        <div class="form-card-header">
+          <div>
+            <p class="project-label">Task Management</p>
+            <h2>Create New Task</h2>
+          </div>
+          <a href="/dashboard" class="back-link">← Back to dashboard</a>
+        </div>
+
+        <form class="task-form" action="#" method="post">
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="title">Task Title</label>
+              <input type="text" id="title" name="title" placeholder="Enter task title" required>
+            </div>
+
+            <div class="form-group">
+              <label for="projectId">Project</label>
+              <select id="projectId" name="projectId" required>
+                <% projects.forEach(project => { %>
+                  <option value="<%= project.id %>"><%= project.name %></option>
+                <% }) %>
+              </select>
+            </div>
+
+            <div class="form-group form-group-full">
+              <label for="description">Description</label>
+              <textarea id="description" name="description" placeholder="Enter task description" required></textarea>
+            </div>
+
+            <div class="form-group">
+              <label for="status">Status</label>
+              <select id="status" name="status" required>
+                <option value="todo">To Do</option>
+                <option value="in_progress">In Progress</option>
+                <option value="done">Done</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="priority">Priority</label>
+              <select id="priority" name="priority" required>
+                <option value="low">Low</option>
+                <option value="medium">Medium</option>
+                <option value="high">High</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="assigneeId">Assignee</label>
+              <select id="assigneeId" name="assigneeId" required>
+                <% users.forEach(user => { %>
+                  <option value="<%= user.id %>"><%= user.name %></option>
+                <% }) %>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="deadline">Deadline</label>
+              <input type="date" id="deadline" name="deadline" required>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <a href="/dashboard" class="btn-secondary">Cancel</a>
+            <button type="submit" class="btn-primary">Create Task</button>
+          </div>
+        </form>
+      </div>
+    </section>
+  </div>
+</body>
+</html>
