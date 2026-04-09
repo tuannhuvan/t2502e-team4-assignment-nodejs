@@ -312,6 +312,10 @@ body {
 
 .detail-actions {
   margin-top: 24px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
 }
 
 .back-link {
