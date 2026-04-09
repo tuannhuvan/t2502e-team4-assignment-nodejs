@@ -1,9 +1,9 @@
 const mongoose = require("mongoose");
 
 const schema = new mongoose.Schema({
-  task: { type: mongoose.Schema.Types.ObjectId, ref: "Task" },
   user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-  content: String
+  token: String,
+  expiresAt: Date
 }, { timestamps: true });
 
-module.exports = mongoose.model("Comment", schema);
+module.exports = mongoose.model("RefreshToken", schema);
