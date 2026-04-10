@@ -32,6 +32,14 @@ app.get("/task/create", (req, res) => {
   res.render("task-create", { users, projects });
 });
 
+app.get("/login", (req, res) => {
+  res.render("login");
+});
+
+app.get("/register", (req, res) => {
+  res.render("register");
+});
+
 app.get("/task/:id", (req, res) => {
   const taskId = parseInt(req.params.id);
 
@@ -217,3 +225,74 @@ app.get("/task/:id/delete", (req, res) => {
 
   res.render("task-delete", { task });
 });
+
+app.get("/projects", (req, res) => {
+  const users = [
+    { id: 1, name: "Nhữ Văn Tuấn" },
+    { id: 2, name: "Nguyễn Hữu Trí" },
+    { id: 3, name: "Nguyễn Văn Linh" },
+    { id: 4, name: "Nguyễn Xuân Tùng" }
+  ];
+
+  const projects = [
+    {
+      id: 1,
+      name: "TaskFlow - Mini Trello",
+      description: "Team assignment for NodeJS + Express + MongoDB with realtime updates.",
+      ownerId: 1,
+      isDeleted: false,
+      createdAt: "2026-04-01 08:00",
+      updatedAt: "2026-04-09 09:30"
+    },
+    {
+      id: 2,
+      name: "Frontend UI Upgrade",
+      description: "Improve dashboard, task form and task detail user experience.",
+      ownerId: 4,
+      isDeleted: false,
+      createdAt: "2026-04-03 10:15",
+      updatedAt: "2026-04-09 14:10"
+    },
+    {
+      id: 3,
+      name: "Realtime Notification Module",
+      description: "Prepare UI flow for socket events such as assignee update and comments.",
+      ownerId: 2,
+      isDeleted: false,
+      createdAt: "2026-04-04 09:45",
+      updatedAt: "2026-04-08 17:35"
+    }
+  ];
+
+  const projectMembers = [
+    { id: 1, projectId: 1, userId: 1, role: "Owner" },
+    { id: 2, projectId: 1, userId: 2, role: "Member" },
+    { id: 3, projectId: 1, userId: 3, role: "Member" },
+    { id: 4, projectId: 1, userId: 4, role: "Member" },
+
+    { id: 5, projectId: 2, userId: 4, role: "Owner" },
+    { id: 6, projectId: 2, userId: 1, role: "Member" },
+    { id: 7, projectId: 2, userId: 3, role: "Member" },
+
+    { id: 8, projectId: 3, userId: 2, role: "Owner" },
+    { id: 9, projectId: 3, userId: 1, role: "Member" },
+    { id: 10, projectId: 3, userId: 4, role: "Member" }
+  ];
+
+  const projectList = projects
+    .filter(project => !project.isDeleted)
+    .map(project => {
+      const owner = users.find(user => user.id === project.ownerId);
+      const members = projectMembers.filter(member => member.projectId === project.id);
+
+      return {
+        ...project,
+        ownerName: owner ? owner.name : "Unknown",
+        memberCount: members.length
+      };
+    });
+
+  res.render("project-list", { projectList });
+});
+
+

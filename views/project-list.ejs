@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Projects - TaskFlow</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div class="page">
+    <%- include('partials/header') %>
+    <p class="page-subtitle">Browse all active projects and manage team collaboration</p>
+
+    <div class="page-toolbar">
+      <div>
+        <h2 class="board-title">Project List</h2>
+        <p class="board-subtitle">Overview of all active projects in the system</p>
+      </div>
+
+      <a href="/project/create" class="btn-primary">+ Create Project</a>
+    </div>
+
+    <section class="project-list-grid">
+      <% projectList.forEach(project => { %>
+        <div class="project-list-card">
+          <div class="project-list-card-top">
+            <div>
+              <p class="project-label">Project #<%= project.id %></p>
+              <h3><%= project.name %></h3>
+            </div>
+
+            <span class="project-badge">Active</span>
+          </div>
+
+          <p class="project-list-description"><%= project.description %></p>
+
+          <div class="project-list-meta">
+            <p><strong>Owner:</strong> <%= project.ownerName %></p>
+            <p><strong>Members:</strong> <%= project.memberCount %></p>
+            <p><strong>Created At:</strong> <%= project.createdAt %></p>
+            <p><strong>Updated At:</strong> <%= project.updatedAt %></p>
+          </div>
+
+          <div class="project-list-actions">
+            <a href="/dashboard" class="btn-secondary">View Project</a>
+          </div>
+        </div>
+      <% }) %>
+    </section>
+  </div>
+</body>
+</html>

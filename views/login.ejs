@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - TaskFlow</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div class="auth-page">
+    <div class="auth-card">
+      <div class="auth-brand">
+        <h1>TaskFlow</h1>
+        <p>Sign in to manage your tasks and projects</p>
+      </div>
+
+      <form class="auth-form" action="#" method="post">
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input
+            id="email"
+            name="email"
+            type="email"
+            placeholder="Enter your email"
+            required
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input
+            id="password"
+            name="password"
+            type="password"
+            placeholder="Enter your password"
+            required
+          >
+        </div>
+
+        <button type="submit" class="auth-button">Login</button>
+      </form>
+
+      <p class="auth-footer">
+        Don’t have an account?
+        <a href="/register">Create one</a>
+      </p>
+    </div>
+  </div>
+</body>
+</html>

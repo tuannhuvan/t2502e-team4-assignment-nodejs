@@ -61,6 +61,34 @@
       <link rel="stylesheet" href="/style.css">
     </head>
 
+    <script>
+      function allowDrop(event) {
+        event.preventDefault();
+      }
+
+      function dragTask(event) {
+        event.dataTransfer.setData("text/plain", event.currentTarget.id);
+      }
+
+      function dropTask(event) {
+        event.preventDefault();
+
+        const taskId = event.dataTransfer.getData("text/plain");
+        const taskCard = document.getElementById(taskId);
+
+        let dropZone = event.target;
+        while (dropZone && !dropZone.classList.contains("drop-zone")) {
+          dropZone = dropZone.parentElement;
+        }
+
+        if (!dropZone || !taskCard) {
+          return;
+        }
+
+        dropZone.appendChild(taskCard);
+      }
+    </script>
+
     <body>
       <div class="page">
         <%- include('partials/header') %>
@@ -183,15 +211,14 @@
               <p class="board-subtitle">Manage tasks by status and track project progress</p>
             </div>
 
-            <a href="/task/create" class="btn-primary">+ Create Task</a>
           </div>
 
           <section class="board">
-            <div class="column">
+            <div class="column drop-zone" data-status="todo" ondrop="dropTask(event)" ondragover="allowDrop(event)">
               <h2>To Do</h2>
 
               <% activeTasks.filter(task=> task.status === "todo").forEach(task => { %>
-                <div class="task-card">
+                <div class="task-card" id="task-<%= task.id %>" draggable="true" ondragstart="dragTask(event)">
                   <div class="task-card-top">
                     <h4>
                       <%= task.title %>
@@ -218,11 +245,12 @@
                 <% }) %>
             </div>
 
-            <div class="column">
+            <div class="column drop-zone" data-status="in_progress" ondrop="dropTask(event)"
+              ondragover="allowDrop(event)">
               <h2>In Progress</h2>
 
               <% activeTasks.filter(task=> task.status === "in_progress").forEach(task => { %>
-                <div class="task-card">
+                <div class="task-card" id="task-<%= task.id %>" draggable="true" ondragstart="dragTask(event)">
                   <div class="task-card-top">
                     <h4>
                       <%= task.title %>
@@ -249,11 +277,11 @@
                 <% }) %>
             </div>
 
-            <div class="column">
+            <div class="column drop-zone" data-status="done" ondrop="dropTask(event)" ondragover="allowDrop(event)">
               <h2>Done</h2>
 
               <% activeTasks.filter(task=> task.status === "done").forEach(task => { %>
-                <div class="task-card">
+                <div class="task-card" id="task-<%= task.id %>" draggable="true" ondragstart="dragTask(event)">
                   <div class="task-card-top">
                     <h4>
                       <%= task.title %>
