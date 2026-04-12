@@ -32,6 +32,8 @@ const register = async (req, res) => {
         res.status(500).json({ message: 'Server error' });
     }
 };
+
+const login = async (req, res) => {
     try {
         const { email, password } = req.body;
         const existingUser = await User.findOne({ email }).select('+password');
