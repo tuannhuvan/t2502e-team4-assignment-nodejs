@@ -84,24 +84,27 @@ exports.initSocket = (server) => {
 
 // Universal notification emitter
 exports.emitNotification = async (options) => {
-  const { projectId, userId, action, entityType, entityData, customMessage, additionalData = {} } = options;
+  const { projectId, userId, user: userOption, action, entityType, entityData, customMessage, additionalData = {} } = options;
 
   if (!io) {
     console.warn("Socket.io not initialized. Notification not emitted.");
     return;
   }
 
-  if (!projectId || !userId || !action || !entityType) {
+  if (!projectId || (!userId && !userOption) || !action || !entityType) {
     console.warn("Missing required parameters for notification");
     return;
   }
 
   try {
-    // Get user information
-    const user = await User.findById(userId);
+    // Use provided user object if available, otherwise fetch from DB
+    let user = userOption;
     if (!user) {
-      console.warn("User not found for notification");
-      return;
+      user = await User.findById(userId);
+      if (!user) {
+        console.warn("User not found for notification");
+        return;
+      }
     }
 
     // Get notification template
