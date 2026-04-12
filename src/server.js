@@ -2,7 +2,7 @@ require('dotenv').config();
 const http = require('http');
 const app = require('./app');
 const connectDB = require('./config/db');
-const { initSocket } = require('./sockets/action.notification');
+const { initSocket } = require('./sockets/index');
 
 // Kết nối Database
 connectDB();
