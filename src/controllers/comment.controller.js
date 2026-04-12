@@ -9,22 +9,18 @@ exports.create = async (req, res) => {
     return res.status(400).json({ message: "Failed to create comment" });
   }
 
-  const user = await userService.getUserById(req.userId);
-
-  // Get the task to find the projectId
+  // Get the task to find the projectId and task title
   const task = await Task.findById(data.task);
   if (task) {
-    notificationSocket.emitProjectNotification(task.projectId, {
-      title: "New Comment",
-      message: `${user.fullName || user.email} commented on task "${task.title}": "${data.content?.substring(0, 50)}${data.content?.length > 50 ? '...' : ''}"`,
-      type: "info",
-      comment: data,
-      action: "commented",
-      user: {
-        id: user._id,
-        fullName: user.fullName,
-        email: user.email,
-        role: user.role
+    // Emit universal notification
+    await notificationSocket.emitNotification({
+      projectId: task.projectId,
+      userId: req.userId,
+      action: "created",
+      entityType: "comment",
+      entityData: data,
+      additionalData: {
+        taskTitle: task.title
       }
     });
   }

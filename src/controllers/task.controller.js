@@ -18,20 +18,13 @@ exports.update = async (req, res) => {
     return res.status(404).json({ message: "Task not found" });
   }
 
-  const user = await userService.getUserById(req.userId);
-
-  notificationSocket.emitProjectNotification(data.projectId, {
-    title: "Task Updated",
-    message: `Task \"${data.title || data.name || data._id}\" was updated by ${user.fullName || user.email}.`,
-    type: "info",
-    task: data,
+  // Emit universal notification
+  await notificationSocket.emitNotification({
+    projectId: data.projectId,
+    userId: req.userId,
     action: "updated",
-    user: {
-      id: user._id,
-      fullName: user.fullName,
-      email: user.email,
-      role: user.role
-    }
+    entityType: "task",
+    entityData: data
   });
 
   res.json(data);
@@ -43,20 +36,13 @@ exports.remove = async (req, res) => {
     return res.status(404).json({ message: "Task not found" });
   }
 
-  const user = await userService.getUserById(req.userId);
-
-  notificationSocket.emitProjectNotification(deleted.projectId, {
-    title: "Task Deleted",
-    message: `Task \"${deleted.title || deleted.name || deleted._id}\" was deleted by ${user.fullName || user.email}.`,
-    type: "warning",
-    task: deleted,
+  // Emit universal notification
+  await notificationSocket.emitNotification({
+    projectId: deleted.projectId,
+    userId: req.userId,
     action: "deleted",
-    user: {
-      id: user._id,
-      fullName: user.fullName,
-      email: user.email,
-      role: user.role
-    }
+    entityType: "task",
+    entityData: deleted
   });
 
   res.json({ msg: "Deleted" });
