@@ -1,10 +1,10 @@
 const jwt = require('jsonwebtoken');
 const userService = require('../services/user.service');
 
-// Verify JWT token
+// Verify JWT token from HTTP-only cookie
 exports.verifyToken = async (req, res, next) => {
   try {
-    const token = req.headers.authorization?.split(' ')[1]; // Bearer token
+    const token = req.cookies.accessToken; // Read from HTTP-only cookie
     if (!token) {
       return res.status(401).json({ message: 'No token provided' });
     }

@@ -1,11 +1,17 @@
 const express = require("express");
 const cors = require("cors");
+const cookieParser = require("cookie-parser");
 const app = express();
 
-app.use(cors());
+app.use(cors({
+  origin: true,
+  credentials: true
+}));
+app.use(cookieParser());
 app.use(express.json());
 
 // ROUTES
+app.use("/api/auth", require("./routes/auth.routes"));
 app.use("/api/projects", require("./routes/project.routes"));
 app.use("/api/tasks", require("./routes/task.routes"));
 app.use("/api/comments", require("./routes/comment.routes"));
