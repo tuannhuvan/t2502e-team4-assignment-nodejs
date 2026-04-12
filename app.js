@@ -14,7 +14,116 @@ app.get("/", (req, res) => {
 });
 
 app.get("/dashboard", (req, res) => {
-  res.render("dashboard");
+  const currentProject = {
+    id: 1,
+    name: "TaskFlow - Mini Trello",
+    description: "Team assignment for NodeJS + Express + MongoDB with realtime updates.",
+    ownerName: "Nhữ Văn Tuấn",
+    memberCount: 4,
+    createdAt: "2026-04-01 08:00",
+    updatedAt: "2026-04-09 09:30"
+  };
+
+  const currentProjectMembers = [
+    {
+      userId: 1,
+      name: "Nhữ Văn Tuấn",
+      github: "tuannhuvan",
+      dob: "2000-01-15",
+      avatar: "/images/tuan.jpg",
+      role: "Owner"
+    },
+    {
+      userId: 2,
+      name: "Nguyễn Hữu Trí",
+      github: "Ooloobooloo",
+      dob: "2000-08-10",
+      avatar: "/images/tri.jpg",
+      role: "Member"
+    },
+    {
+      userId: 3,
+      name: "Nguyễn Văn Linh",
+      github: "nhoi03",
+      dob: "2004-03-23",
+      avatar: "/images/linh.jpg",
+      role: "Member"
+    },
+    {
+      userId: 4,
+      name: "Nguyễn Xuân Tùng",
+      github: "XuanTung2493",
+      dob: "2000-05-12",
+      avatar: "/images/tung.jpg",
+      role: "Member"
+    }
+  ];
+
+  const activeTasks = [
+    {
+      id: 1,
+      projectId: 1,
+      title: "Collect requirements",
+      description: "Review assignment scope, ERD and task distribution for the team.",
+      status: "todo",
+      priority: "high",
+      assigneeId: 1,
+      assigneeName: "Nhữ Văn Tuấn",
+      deadline: "2026-04-10",
+      updatedAt: "2026-04-06 11:15"
+    },
+    {
+      id: 2,
+      projectId: 1,
+      title: "Design dashboard UI",
+      description: "Build personal dashboard, stats cards and kanban layout with EJS.",
+      status: "in_progress",
+      priority: "medium",
+      assigneeId: 4,
+      assigneeName: "Nguyễn Xuân Tùng",
+      deadline: "2026-04-12",
+      updatedAt: "2026-04-08 14:20"
+    },
+    {
+      id: 3,
+      projectId: 1,
+      title: "Create task detail page",
+      description: "Prepare task detail UI with task information and comment section.",
+      status: "in_progress",
+      priority: "high",
+      assigneeId: 2,
+      assigneeName: "Nguyễn Hữu Trí",
+      deadline: "2026-04-11",
+      updatedAt: "2026-04-09 08:45"
+    },
+    {
+      id: 4,
+      projectId: 1,
+      title: "Setup project structure",
+      description: "Organize views, partials, public assets and initial routing.",
+      status: "done",
+      priority: "low",
+      assigneeId: 3,
+      assigneeName: "Nguyễn Văn Linh",
+      deadline: "2026-04-08",
+      updatedAt: "2026-04-07 16:10"
+    }
+  ];
+
+  const totalTasks = activeTasks.length;
+  const overdueTasks = activeTasks.filter(task => new Date(task.deadline) < new Date()).length;
+  const inProgressTasks = activeTasks.filter(task => task.status === "in_progress").length;
+  const doneTasks = activeTasks.filter(task => task.status === "done").length;
+
+  res.render("dashboard", {
+    currentProject,
+    currentProjectMembers,
+    activeTasks,
+    totalTasks,
+    overdueTasks,
+    inProgressTasks,
+    doneTasks
+  });
 });
 
 app.get("/task/create", (req, res) => {
