@@ -1,3 +1,8 @@
 node_modules/
+bin/
+obj/
 .env
 .DS_Store
+config.local.json
+# Bỏ qua tất cả các tệp log
+*.log
