@@ -1,0 +1,92 @@
+<div class="page">
+  <p class="page-subtitle">Task Detail</p>
+
+  <div class="detail-layout">
+    <section class="task-detail-card">
+      <div class="detail-header">
+        <h2><%= task.title %></h2>
+        <span class="priority <%= task.priority.toLowerCase() %>"><%= task.priority %></span>
+      </div>
+
+      <div class="detail-info">
+        <p><strong>Status:</strong> <%= task.status %></p>
+        <p><strong>Assignee:</strong> <%= task.assignee %></p>
+        <p><strong>Deadline:</strong> <%= task.deadline %></p>
+      </div>
+
+      <div class="detail-actions">
+        <a href="/task/<%= task.id %>/edit"   class="btn-primary">Edit Task</a>
+        <a href="/task/<%= task.id %>/delete" class="btn-danger">Delete Task</a>
+        <a href="/dashboard" class="back-link">← Back to board</a>
+      </div>
+    </section>
+
+    <section class="comment-section">
+      <h3>Comments</h3>
+
+      <div class="comment-list" id="commentList">
+        <%# Comments will be loaded here dynamically %>
+      </div>
+
+      <form class="comment-form" id="commentForm">
+        <textarea id="commentText" placeholder="Write a comment..." required></textarea>
+        <button type="submit">Add Comment</button>
+      </form>
+
+      <p id="commentMessage" class="form-message"></p>
+    </section>
+  </div>
+</div>
+
+<script>
+  // Load comments from API
+  async function loadComments() {
+    try {
+      const response = await fetch("/api/comments?taskId=<%= task.id %>");
+      if (!response.ok) return;
+      const data = await response.json();
+      const list = document.getElementById("commentList");
+      list.innerHTML = data.map(c => `
+        <div class="comment-item">
+          <p class="comment-author">${c.authorName || "Unknown"}</p>
+          <p class="comment-text">${c.content}</p>
+        </div>
+      `).join("");
+    } catch (_) {}
+  }
+
+  loadComments();
+
+  // Submit a new comment
+  document.getElementById("commentForm").addEventListener("submit", async event => {
+    event.preventDefault();
+    const commentMessage = document.getElementById("commentMessage");
+    const content = document.getElementById("commentText").value.trim();
+
+    commentMessage.textContent = "Posting...";
+    commentMessage.className   = "form-message";
+
+    try {
+      const response = await fetch("/api/comments", {
+        method:  "POST",
+        headers: { "Content-Type": "application/json" },
+        body:    JSON.stringify({ taskId: <%= task.id %>, content: content })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        commentMessage.textContent = data.message || "Failed to post comment";
+        commentMessage.className   = "form-message error-message";
+        return;
+      }
+
+      commentMessage.textContent = "";
+      document.getElementById("commentText").value = "";
+      loadComments();
+    } catch (error) {
+      commentMessage.textContent = "Cannot connect to server";
+      commentMessage.className   = "form-message error-message";
+    }
+  });
+</script>
