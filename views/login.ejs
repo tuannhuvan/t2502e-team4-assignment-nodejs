@@ -1,50 +1,68 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login - TaskFlow</title>
-  <link rel="stylesheet" href="/style.css">
-</head>
-<body>
-  <div class="auth-page">
-    <div class="auth-card">
-      <div class="auth-brand">
-        <h1>TaskFlow</h1>
-        <p>Sign in to manage your tasks and projects</p>
+<div class="auth-page">
+  <div class="auth-card">
+    <div class="auth-brand">
+      <h1>TaskFlow</h1>
+      <p>Sign in to manage your tasks and projects</p>
+    </div>
+
+    <form class="auth-form" id="loginForm">
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input id="email" name="email" type="email" placeholder="Enter your email" required>
       </div>
 
-      <form class="auth-form" action="#" method="post">
-        <div class="form-group">
-          <label for="email">Email</label>
-          <input
-            id="email"
-            name="email"
-            type="email"
-            placeholder="Enter your email"
-            required
-          >
-        </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input id="password" name="password" type="password" placeholder="Enter your password" required>
+      </div>
 
-        <div class="form-group">
-          <label for="password">Password</label>
-          <input
-            id="password"
-            name="password"
-            type="password"
-            placeholder="Enter your password"
-            required
-          >
-        </div>
+      <p id="loginMessage" class="form-message"></p>
 
-        <button type="submit" class="auth-button">Login</button>
-      </form>
+      <button type="submit" class="auth-button">Login</button>
+    </form>
 
-      <p class="auth-footer">
-        Don’t have an account?
-        <a href="/register">Create one</a>
-      </p>
-    </div>
+    <p class="auth-footer">
+      Don’t have an account?
+      <a href="/register">Create one</a>
+    </p>
   </div>
-</body>
-</html>
+</div>
+
+<script>
+  const loginForm = document.getElementById("loginForm");
+  const loginMessage = document.getElementById("loginMessage");
+
+  loginForm.addEventListener("submit", async event => {
+    event.preventDefault();
+
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value.trim();
+
+    loginMessage.textContent = "Processing...";
+    loginMessage.className = "form-message";
+
+    try {
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ email, password })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        loginMessage.textContent = data.message || "Login failed";
+        loginMessage.className = "form-message error-message";
+        return;
+      }
+
+      loginMessage.textContent = data.message || "Login successful";
+      loginMessage.className = "form-message success-message";
+    } catch (error) {
+      loginMessage.textContent = "Cannot connect to server";
+      loginMessage.className = "form-message error-message";
+    }
+  });
+</script>

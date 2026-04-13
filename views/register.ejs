@@ -1,72 +1,92 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Register - TaskFlow</title>
-  <link rel="stylesheet" href="/style.css">
-</head>
-<body>
-  <div class="auth-page">
-    <div class="auth-card">
-      <div class="auth-brand">
-        <h1>TaskFlow</h1>
-        <p>Create your account to start collaborating</p>
+<div class="auth-page">
+  <div class="auth-card">
+    <div class="auth-brand">
+      <h1>TaskFlow</h1>
+      <p>Create your account to start collaborating</p>
+    </div>
+
+    <form class="auth-form" id="registerForm">
+      <div class="form-group">
+        <label for="name">Full Name</label>
+        <input id="name" name="name" type="text" placeholder="Enter your full name" required>
       </div>
 
-      <form class="auth-form" action="#" method="post">
-        <div class="form-group">
-          <label for="name">Full Name</label>
-          <input
-            id="name"
-            name="name"
-            type="text"
-            placeholder="Enter your full name"
-            required
-          >
-        </div>
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input id="email" name="email" type="email" placeholder="Enter your email" required>
+      </div>
 
-        <div class="form-group">
-          <label for="email">Email</label>
-          <input
-            id="email"
-            name="email"
-            type="email"
-            placeholder="Enter your email"
-            required
-          >
-        </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input id="password" name="password" type="password" placeholder="Create a password" required>
+      </div>
 
-        <div class="form-group">
-          <label for="password">Password</label>
-          <input
-            id="password"
-            name="password"
-            type="password"
-            placeholder="Create a password"
-            required
-          >
-        </div>
+      <div class="form-group">
+        <label for="confirmPassword">Confirm Password</label>
+        <input
+          id="confirmPassword"
+          name="confirmPassword"
+          type="password"
+          placeholder="Confirm your password"
+          required
+        >
+      </div>
 
-        <div class="form-group">
-          <label for="confirmPassword">Confirm Password</label>
-          <input
-            id="confirmPassword"
-            name="confirmPassword"
-            type="password"
-            placeholder="Confirm your password"
-            required
-          >
-        </div>
+      <p id="registerMessage" class="form-message"></p>
 
-        <button type="submit" class="auth-button">Register</button>
-      </form>
+      <button type="submit" class="auth-button">Register</button>
+    </form>
 
-      <p class="auth-footer">
-        Already have an account?
-        <a href="/login">Sign in</a>
-      </p>
-    </div>
+    <p class="auth-footer">
+      Already have an account?
+      <a href="/login">Sign in</a>
+    </p>
   </div>
-</body>
-</html>
+</div>
+
+<script>
+  const registerForm = document.getElementById("registerForm");
+  const registerMessage = document.getElementById("registerMessage");
+
+  registerForm.addEventListener("submit", async event => {
+    event.preventDefault();
+
+    const name = document.getElementById("name").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value.trim();
+    const confirmPassword = document.getElementById("confirmPassword").value.trim();
+
+    if (password !== confirmPassword) {
+      registerMessage.textContent = "Passwords do not match";
+      registerMessage.className = "form-message error-message";
+      return;
+    }
+
+    registerMessage.textContent = "Processing...";
+    registerMessage.className = "form-message";
+
+    try {
+      const response = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ name, email, password, confirmPassword })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        registerMessage.textContent = data.message || "Register failed";
+        registerMessage.className = "form-message error-message";
+        return;
+      }
+
+      registerMessage.textContent = data.message || "Register successful";
+      registerMessage.className = "form-message success-message";
+    } catch (error) {
+      registerMessage.textContent = "Cannot connect to server";
+      registerMessage.className = "form-message error-message";
+    }
+  });
+</script>

@@ -1,87 +1,123 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Create Task - TaskFlow</title>
-  <link rel="stylesheet" href="/style.css">
-</head>
-<body>
-  <div class="page">
-    <%- include('partials/header') %>
-    <p class="page-subtitle">Create a new task for your project</p>
+<div class="page">
+  <p class="page-subtitle">Create a new task for your project</p>
 
-    <section class="form-page">
-      <div class="form-card">
-        <div class="form-card-header">
-          <div>
-            <p class="project-label">Task Management</p>
-            <h2>Create New Task</h2>
+  <section class="form-page">
+    <div class="form-card">
+      <div class="form-card-header">
+        <div>
+          <p class="project-label">Task Management</p>
+          <h2>Create New Task</h2>
+        </div>
+        <a href="/dashboard" class="back-link">← Back to dashboard</a>
+      </div>
+
+      <form class="task-form" id="createTaskForm">
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="title">Task Title</label>
+            <input type="text" id="title" name="title" placeholder="Enter task title" required>
           </div>
-          <a href="/dashboard" class="back-link">← Back to dashboard</a>
+
+          <div class="form-group">
+            <label for="projectId">Project</label>
+            <select id="projectId" name="projectId" required>
+              <% projects.forEach(project => { %>
+                <option value="<%= project.id %>"><%= project.name %></option>
+              <% }) %>
+            </select>
+          </div>
+
+          <div class="form-group form-group-full">
+            <label for="description">Description</label>
+            <textarea id="description" name="description" placeholder="Enter task description" required></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="status">Status</label>
+            <select id="status" name="status" required>
+              <option value="todo">To Do</option>
+              <option value="in_progress">In Progress</option>
+              <option value="done">Done</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="priority">Priority</label>
+            <select id="priority" name="priority" required>
+              <option value="low">Low</option>
+              <option value="medium">Medium</option>
+              <option value="high">High</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="assigneeId">Assignee</label>
+            <select id="assigneeId" name="assigneeId" required>
+              <% users.forEach(user => { %>
+                <option value="<%= user.id %>"><%= user.name %></option>
+              <% }) %>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="deadline">Deadline</label>
+            <input type="date" id="deadline" name="deadline" required>
+          </div>
         </div>
 
-        <form class="task-form" action="#" method="post">
-          <div class="form-grid">
-            <div class="form-group">
-              <label for="title">Task Title</label>
-              <input type="text" id="title" name="title" placeholder="Enter task title" required>
-            </div>
+        <p id="taskMessage" class="form-message"></p>
 
-            <div class="form-group">
-              <label for="projectId">Project</label>
-              <select id="projectId" name="projectId" required>
-                <% projects.forEach(project => { %>
-                  <option value="<%= project.id %>"><%= project.name %></option>
-                <% }) %>
-              </select>
-            </div>
+        <div class="form-actions">
+          <a href="/dashboard" class="btn-secondary">Cancel</a>
+          <button type="submit" class="btn-primary">Create Task</button>
+        </div>
+      </form>
+    </div>
+  </section>
+</div>
 
-            <div class="form-group form-group-full">
-              <label for="description">Description</label>
-              <textarea id="description" name="description" placeholder="Enter task description" required></textarea>
-            </div>
+<script>
+  const createTaskForm = document.getElementById("createTaskForm");
+  const taskMessage = document.getElementById("taskMessage");
 
-            <div class="form-group">
-              <label for="status">Status</label>
-              <select id="status" name="status" required>
-                <option value="todo">To Do</option>
-                <option value="in_progress">In Progress</option>
-                <option value="done">Done</option>
-              </select>
-            </div>
+  createTaskForm.addEventListener("submit", async event => {
+    event.preventDefault();
 
-            <div class="form-group">
-              <label for="priority">Priority</label>
-              <select id="priority" name="priority" required>
-                <option value="low">Low</option>
-                <option value="medium">Medium</option>
-                <option value="high">High</option>
-              </select>
-            </div>
+    const formData = {
+      title: document.getElementById("title").value.trim(),
+      projectId: document.getElementById("projectId").value,
+      description: document.getElementById("description").value.trim(),
+      status: document.getElementById("status").value,
+      priority: document.getElementById("priority").value,
+      assigneeId: document.getElementById("assigneeId").value,
+      deadline: document.getElementById("deadline").value
+    };
 
-            <div class="form-group">
-              <label for="assigneeId">Assignee</label>
-              <select id="assigneeId" name="assigneeId" required>
-                <% users.forEach(user => { %>
-                  <option value="<%= user.id %>"><%= user.name %></option>
-                <% }) %>
-              </select>
-            </div>
+    taskMessage.textContent = "Processing...";
+    taskMessage.className = "form-message";
 
-            <div class="form-group">
-              <label for="deadline">Deadline</label>
-              <input type="date" id="deadline" name="deadline" required>
-            </div>
-          </div>
+    try {
+      const response = await fetch("/api/tasks", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(formData)
+      });
 
-          <div class="form-actions">
-            <a href="/dashboard" class="btn-secondary">Cancel</a>
-            <button type="submit" class="btn-primary">Create Task</button>
-          </div>
-        </form>
-      </div>
-    </section>
-  </div>
-</body>
-</html>
+      const data = await response.json();
+
+      if (!response.ok) {
+        taskMessage.textContent = data.message || "Create task failed";
+        taskMessage.className = "form-message error-message";
+        return;
+      }
+
+      taskMessage.textContent = data.message || "Task created successfully";
+      taskMessage.className = "form-message success-message";
+    } catch (error) {
+      taskMessage.textContent = "Cannot connect to server";
+      taskMessage.className = "form-message error-message";
+    }
+  });
+</script>

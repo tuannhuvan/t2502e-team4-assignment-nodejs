@@ -1,98 +1,72 @@
-<!DOCTYPE html>
-<html lang="en">
+<div class="page">
+  <p class="page-subtitle">Task Detail</p>
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Task Detail</title>
-  <link rel="stylesheet" href="/style.css">
-</head>
+  <div class="detail-layout">
+    <section class="task-detail-card">
+      <div class="detail-header">
+        <h2><%= task.title %></h2>
 
-<body>
-  <div class="page">
-
-    <%- include('partials/header') %>
-      <p class="page-subtitle">Task Detail</p>
-
-      <div class="detail-layout">
-        <section class="task-detail-card">
-          <div class="detail-header">
-            <h2>
-              <%= task.title %>
-            </h2>
-
-            <p><strong>Status:</strong>
-              <%= task.status %>
-            </p>
-            <p><strong>Assignee:</strong>
-              <%= task.assignee %>
-            </p>
-            <p><strong>Deadline:</strong>
-              <%= task.deadline %>
-            </p>
-            <p><strong>Priority:</strong>
-              <%= task.priority %>
-            </p>
-            <span class="priority medium">Medium</span>
-          </div>
-
-          <div class="detail-info">
-            <p><strong>Status:</strong> In Progress</p>
-            <p><strong>Assignee:</strong> Nhữ Văn Tuấn</p>
-            <p><strong>Role:</strong> Team Leader</p>
-            <p><strong>Deadline:</strong> 2026-04-12</p>
-            <p><strong>Project:</strong> TaskFlow – Mini Trello</p>
-          </div>
-
-          <div class="detail-description">
-            <h3>Description</h3>
-            <p>
-              Build the dashboard interface for the TaskFlow project, including
-              summary statistic cards, kanban columns, task cards, and a clean
-              layout for team task management.
-            </p>
-          </div>
-
-          <div class="detail-actions">
-            <a href="/task/<%= task.id %>/edit" class="btn-primary">Edit Task</a>
-            <a href="/task/<%= task.id %>/delete" class="btn-danger">Delete Task</a>
-            <a href="/dashboard" class="back-link">← Back to board</a>
-          </div>
-        </section>
-
-        <section class="comment-section">
-          <h3>Comments</h3>
-
-          <div class="comment-list">
-            <div class="comment-item">
-              <p class="comment-author">Nguyễn Xuân Tùng</p>
-              <p class="comment-text">
-                I finished the initial dashboard layout and basic kanban UI.
-              </p>
-            </div>
-
-            <div class="comment-item">
-              <p class="comment-author">Nguyễn Hữu Trí</p>
-              <p class="comment-text">
-                Please keep the task detail page consistent with the dashboard style.
-              </p>
-            </div>
-
-            <div class="comment-item">
-              <p class="comment-author">Nguyễn Văn Linh</p>
-              <p class="comment-text">
-                We should improve the member information and highlight the leader.
-              </p>
-            </div>
-          </div>
-
-          <form class="comment-form">
-            <textarea placeholder="Write a comment..."></textarea>
-            <button type="submit">Add Comment</button>
-          </form>
-        </section>
+        <p><strong>Status:</strong> <%= task.status %></p>
+        <p><strong>Assignee:</strong> <%= task.assignee %></p>
+        <p><strong>Deadline:</strong> <%= task.deadline %></p>
+        <p><strong>Priority:</strong> <%= task.priority %></p>
+        <span class="priority medium">Medium</span>
       </div>
-  </div>
-</body>
 
-</html>
+      <div class="detail-info">
+        <p><strong>Status:</strong> In Progress</p>
+        <p><strong>Assignee:</strong> Nhữ Văn Tuấn</p>
+        <p><strong>Role:</strong> Team Leader</p>
+        <p><strong>Deadline:</strong> 2026-04-12</p>
+        <p><strong>Project:</strong> TaskFlow – Mini Trello</p>
+      </div>
+
+      <div class="detail-description">
+        <h3>Description</h3>
+        <p>
+          Build the dashboard interface for the TaskFlow project, including
+          summary statistic cards, kanban columns, task cards, and a clean
+          layout for team task management.
+        </p>
+      </div>
+
+      <div class="detail-actions">
+        <a href="/task/<%= task.id %>/edit" class="btn-primary">Edit Task</a>
+        <a href="/task/<%= task.id %>/delete" class="btn-danger">Delete Task</a>
+        <a href="/dashboard" class="back-link">← Back to board</a>
+      </div>
+    </section>
+
+    <section class="comment-section">
+      <h3>Comments</h3>
+
+      <div class="comment-list">
+        <div class="comment-item">
+          <p class="comment-author">Nguyễn Xuân Tùng</p>
+          <p class="comment-text">
+            I finished the initial dashboard layout and basic kanban UI.
+          </p>
+        </div>
+
+        <div class="comment-item">
+          <p class="comment-author">Nguyễn Hữu Trí</p>
+          <p class="comment-text">
+            Please keep the task detail page consistent with the dashboard style.
+          </p>
+        </div>
+
+        <div class="comment-item">
+          <p class="comment-author">Nguyễn Văn Linh</p>
+          <p class="comment-text">
+            We should improve the member information and highlight the leader.
+          </p>
+        </div>
+      </div>
+
+      <form class="comment-form">
+        <textarea placeholder="Write a comment..."></textarea>
+        <button type="submit">Add Comment</button>
+      </form>
+    </section>
+  </div>
+</div>
