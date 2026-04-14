@@ -42,7 +42,9 @@
   // Load comments from API
   async function loadComments() {
     try {
-      const response = await fetch("/api/comments/<%= task.id %>");
+      const response = await fetch("/api/comments/<%= task.id %>", {
+        credentials: "include"
+      });
       if (!response.ok) return;
       const data = await response.json();
       const list = document.getElementById("commentList");
@@ -69,6 +71,7 @@
     try {
       const response = await fetch("/api/comments", {
         method:  "POST",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body:    JSON.stringify({ task: "<%= task.id %>", content: content })
       });

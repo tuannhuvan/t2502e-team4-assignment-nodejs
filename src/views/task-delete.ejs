@@ -44,6 +44,7 @@
     try {
       const response = await fetch("/api/tasks/<%= task.id %>", {
         method: "DELETE",
+        credentials: "include",
         headers: { "Content-Type": "application/json" }
       });
 

@@ -103,6 +103,7 @@
     try {
       const response = await fetch("/api/tasks/<%= task.id %>", {
         method:  "PUT",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body:    JSON.stringify(formData)
       });

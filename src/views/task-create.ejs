@@ -99,6 +99,7 @@
     try {
       const response = await fetch("/api/tasks", {
         method: "POST",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json"
         },

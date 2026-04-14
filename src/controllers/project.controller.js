@@ -3,12 +3,13 @@ const notificationSocket = require("../sockets/index");
 
 exports.create = async (req, res) => {
   try {
-    const data = await service.createProject(req.body, req.user._id);
+    const userId = req.userId || (req.user && req.user._id);
+    const data = await service.createProject(req.body, userId);
 
     // Emit universal notification to the project room
     await notificationSocket.emitNotification({
       projectId: data._id,
-      userId: req.user._id,
+      userId,
       action: "created",
       entityType: "project",
       entityData: data
