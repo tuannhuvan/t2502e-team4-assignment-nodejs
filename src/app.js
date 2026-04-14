@@ -3,8 +3,8 @@ const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const path = require("path");
 const expressLayouts = require("express-ejs-layouts");
+const jwt = require("jsonwebtoken");
 const auth = require("./middleware/auth.middleware");
-const dashboardController = require("./controllers/dashboard.controller");
 require("dotenv").config();
 
 const app = express();

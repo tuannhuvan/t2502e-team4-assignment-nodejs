@@ -61,7 +61,7 @@
   <% } else { %>
     <section class="project-overview">
       <div class="project-info-card">
-        <% if (locals.currentProject) { %>
+        <% if (currentProject) { %>
           <div class="project-main-info">
             <div class="project-icon">📁</div>
             <div>
@@ -165,7 +165,7 @@
     <section class="team">
       <h2>👥 Project Members</h2>
       <div class="team-list">
-        <% if (locals.currentProjectMembers && currentProjectMembers.length > 0) { %>
+        <% if (currentProjectMembers && currentProjectMembers.length > 0) { %>
           <% currentProjectMembers.forEach(member => { %>
             <div class="team-card <%= member.role === 'Owner' ? 'leader-card' : '' %>">
               <div class="member-header">

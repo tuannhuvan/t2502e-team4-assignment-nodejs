@@ -1,5 +1,19 @@
-exports.showTaskCreate = (req, res) => {
-  res.render("task-create");
+const projectService = require("../services/project.service");
+const userService = require("../services/user.service");
+
+exports.showTaskCreate = async (req, res) => {
+  try {
+    const projects = await projectService.getProjects();
+    const users = await userService.getUsers();
+    res.render("task-create", { projects, users });
+  } catch (error) {
+    console.error("Task create page error:", error);
+    res.render("task-create", { projects: [], users: [] });
+  }
+};
+
+exports.showProjectCreate = (req, res) => {
+  res.render("project-create");
 };
 
 exports.showTaskDetail = (req, res) => {

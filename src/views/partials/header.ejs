@@ -4,8 +4,9 @@
   </div>
 
   <div class="header-right">
-    <% if (locals.isLoggedIn) { %>
+    <% if (isLoggedIn) { %>
       <a href="/dashboard" class="btn-secondary">Dashboard</a>
+      <a href="/project/create" class="btn-secondary">+ Create Project</a>
       <a href="/task/create" class="btn-primary">+ Create Task</a>
       <button id="logoutBtn" class="btn-secondary">Logout</button>
     <% } else { %>
