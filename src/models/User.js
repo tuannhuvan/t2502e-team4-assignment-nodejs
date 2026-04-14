@@ -5,6 +5,8 @@ const schema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true, select: false },
   fullName: String,
+  dob: Date,
+  github: String,
   avatar: String,
   role: { type: String, enum: ["Owner", "Member"], default: "Member" },
   isDeleted: { type: Boolean, default: false }

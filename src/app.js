@@ -4,6 +4,11 @@ const cookieParser = require("cookie-parser");
 const path = require("path");
 const expressLayouts = require("express-ejs-layouts");
 const mongoose = require("mongoose");
+const jwt = require("jsonwebtoken");
+const taskService = require("./services/task.service");
+const projectService = require("./services/project.service");
+const userService = require("./services/user.service");
+const auth = require("./middleware/auth.middleware");
 require("dotenv").config();
 
 const app = express();
@@ -14,6 +19,21 @@ app.use(cookieParser());
 app.use(expressLayouts);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use((req, res, next) => {
+  const token = req.cookies?.accessToken;
+  if (token) {
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      res.locals.isLoggedIn = true;
+      res.locals.userId = decoded.userId;
+    } catch (err) {
+      res.locals.isLoggedIn = false;
+    }
+  } else {
+    res.locals.isLoggedIn = false;
+  }
+  next();
+});
 app.use(express.static(path.join(__dirname, "../public")));
 
 // ─── View Engine ──────────────────────────────────────────────────────────────
@@ -58,69 +78,57 @@ app.get("/register", (req, res) => {
 
 
 // Dashboard
-app.get("/dashboard", (req, res) => {
-  const currentProject = {
-    id: 1,
-    name: "TaskFlow - Mini Trello",
-    description: "Team assignment for NodeJS + Express + MongoDB with realtime updates.",
-    ownerName: "Nhữ Văn Tuấn",
-    memberCount: 4,
-    createdAt: "2026-04-01 08:00",
-    updatedAt: "2026-04-09 09:30"
-  };
+app.get("/dashboard", auth.ensureAuthenticated, async (req, res) => {
+  try {
+    const currentProject = await projectService.getProjects().then(projects => projects[0] || null);
+    let activeTasks = [];
+    let currentProjectMembers = [];
 
-  const currentProjectMembers = [
-    { userId: 1, name: "Nhữ Văn Tuấn",   github: "tuannhuvan",  dob: "2000-01-15", avatar: "/images/tuan.jpg", role: "Owner"  },
-    { userId: 2, name: "Nguyễn Hữu Trí", github: "Ooloobooloo", dob: "2000-08-10", avatar: "/images/tri.jpg",  role: "Member" },
-    { userId: 3, name: "Nguyễn Văn Linh",github: "nhoi03",      dob: "2004-03-23", avatar: "/images/linh.jpg", role: "Member" },
-    { userId: 4, name: "Nguyễn Xuân Tùng",github: "XuanTung2493",dob: "2000-05-12",avatar: "/images/tung.jpg", role: "Member" }
-  ];
+    if (currentProject) {
+      activeTasks = await taskService.getTasksByProject(currentProject._id);
+      activeTasks = activeTasks.map(task => ({
+        ...task.toObject ? task.toObject() : task,
+        id: task._id,
+        assigneeName: task.assignee?.fullName || "Unassigned"
+      }));
 
-  const activeTasks = [
-    {
-      id: 1, projectId: 1,
-      title: "Collect requirements",
-      description: "Review assignment scope, ERD and task distribution for the team.",
-      status: "todo", priority: "high",
-      assigneeId: 1, assigneeName: "Nhữ Văn Tuấn",
-      deadline: "2026-04-10", updatedAt: "2026-04-06 11:15"
-    },
-    {
-      id: 2, projectId: 1,
-      title: "Design dashboard UI",
-      description: "Build personal dashboard, stats cards and kanban layout with EJS.",
-      status: "in_progress", priority: "medium",
-      assigneeId: 4, assigneeName: "Nguyễn Xuân Tùng",
-      deadline: "2026-04-12", updatedAt: "2026-04-08 14:20"
-    },
-    {
-      id: 3, projectId: 1,
-      title: "Create task detail page",
-      description: "Prepare task detail UI with task information and comment section.",
-      status: "in_progress", priority: "high",
-      assigneeId: 2, assigneeName: "Nguyễn Hữu Trí",
-      deadline: "2026-04-11", updatedAt: "2026-04-09 08:45"
-    },
-    {
-      id: 4, projectId: 1,
-      title: "Setup project structure",
-      description: "Organize views, partials, public assets and initial routing.",
-      status: "done", priority: "low",
-      assigneeId: 1, assigneeName: "Nhữ Văn Tuấn",
-      deadline: "2026-04-05", updatedAt: "2026-04-03 10:00"
+      currentProjectMembers = currentProject.members?.map(member => ({
+        userId: member.user,
+        name: member.name || "Team member",
+        github: member.github || "",
+        dob: member.dob || "",
+        avatar: member.avatar || "/images/avatar-placeholder.png",
+        role: member.role || "Member"
+      })) || [];
     }
-  ];
 
-  res.render("dashboard", {
-    landingMode: false,
-    currentProject,
-    currentProjectMembers,
-    activeTasks,
-    totalTasks: activeTasks.length,
-    overdueTasks: activeTasks.filter(task => new Date(task.deadline) < new Date() && task.status !== "done").length,
-    inProgressTasks: activeTasks.filter(task => task.status === "in_progress").length,
-    doneTasks: activeTasks.filter(task => task.status === "done").length
-  });
+    res.render("dashboard", {
+      landingMode: false,
+      currentProject,
+      currentProjectMembers,
+      activeTasks,
+      totalTasks: activeTasks.length,
+      overdueTasks: activeTasks.filter(task => {
+        const deadline = task.deadline ? new Date(task.deadline) : null;
+        return deadline instanceof Date && !isNaN(deadline) && deadline < new Date() && task.status !== "done";
+      }).length,
+      inProgressTasks: activeTasks.filter(task => task.status === "in_progress").length,
+      doneTasks: activeTasks.filter(task => task.status === "done").length
+    });
+  } catch (error) {
+    console.error(error);
+
+    res.render("dashboard", {
+      landingMode: false,
+      currentProject: null,
+      currentProjectMembers: [],
+      activeTasks: [],
+      totalTasks: 0,
+      overdueTasks: 0,
+      inProgressTasks: 0,
+      doneTasks: 0
+    });
+  }
 });
 
 // Task Routes
