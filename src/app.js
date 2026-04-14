@@ -2,15 +2,9 @@ const express = require("express");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const path = require("path");
-const http = require("http");
-const { Server } = require("socket.io");
 const expressLayouts = require("express-ejs-layouts");
 
 const app = express();
-const PORT = 3000;
-
-const server = http.createServer(app);
-const io = new Server(server);
 
 // ─── Middleware ───────────────────────────────────────────────────────────────
 app.use(cors({ origin: true, credentials: true }));
@@ -24,14 +18,6 @@ app.use(express.static(path.join(__dirname, "public")));
 app.set("layout", "layout");
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
-
-// ─── Socket.IO ───────────────────────────────────────────────────────────────
-io.on("connection", socket => {
-  console.log(`🔥 Client connected: ${socket.id}`);
-  socket.on("disconnect", () => {
-    console.log(`❌ Client disconnected: ${socket.id}`);
-  });
-});
 
 // ─── API Routes ───────────────────────────────────────────────────────────────
 app.use("/api/projects",      require("./routes/project.routes"));
@@ -98,132 +84,63 @@ app.get("/dashboard", (req, res) => {
       title: "Setup project structure",
       description: "Organize views, partials, public assets and initial routing.",
       status: "done", priority: "low",
-      assigneeId: 3, assigneeName: "Nguyễn Văn Linh",
-      deadline: "2026-04-08", updatedAt: "2026-04-07 16:10"
+      assigneeId: 1, assigneeName: "Nhữ Văn Tuấn",
+      deadline: "2026-04-05", updatedAt: "2026-04-03 10:00"
     }
   ];
 
-  const totalTasks      = activeTasks.length;
-  const overdueTasks    = activeTasks.filter(t => new Date(t.deadline) < new Date()).length;
-  const inProgressTasks = activeTasks.filter(t => t.status === "in_progress").length;
-  const doneTasks       = activeTasks.filter(t => t.status === "done").length;
-
   res.render("dashboard", {
-    currentProject, currentProjectMembers, activeTasks,
-    totalTasks, overdueTasks, inProgressTasks, doneTasks
+    currentProject,
+    currentProjectMembers,
+    activeTasks,
+    totalTasks: activeTasks.length,
+    overdueTasks: activeTasks.filter(task => new Date(task.deadline) < new Date() && task.status !== "done").length,
+    inProgressTasks: activeTasks.filter(task => task.status === "in_progress").length,
+    doneTasks: activeTasks.filter(task => task.status === "done").length
   });
 });
 
-// Projects list
-app.get("/projects", (req, res) => {
-  const users = [
-    { id: 1, name: "Nhữ Văn Tuấn" },
-    { id: 2, name: "Nguyễn Hữu Trí" },
-    { id: 3, name: "Nguyễn Văn Linh" },
-    { id: 4, name: "Nguyễn Xuân Tùng" }
-  ];
-
-  const projects = [
-    { id: 1, name: "TaskFlow - Mini Trello",         description: "Team assignment for NodeJS + Express + MongoDB with realtime updates.", ownerId: 1, isDeleted: false, createdAt: "2026-04-01 08:00", updatedAt: "2026-04-09 09:30" },
-    { id: 2, name: "Frontend UI Upgrade",             description: "Improve dashboard, task form and task detail user experience.",          ownerId: 4, isDeleted: false, createdAt: "2026-04-03 10:15", updatedAt: "2026-04-09 14:10" },
-    { id: 3, name: "Realtime Notification Module",    description: "Prepare UI flow for socket events such as assignee update and comments.", ownerId: 2, isDeleted: false, createdAt: "2026-04-04 09:45", updatedAt: "2026-04-08 17:35" }
-  ];
-
-  const projectMembers = [
-    { id: 1,  projectId: 1, userId: 1, role: "Owner"  },
-    { id: 2,  projectId: 1, userId: 2, role: "Member" },
-    { id: 3,  projectId: 1, userId: 3, role: "Member" },
-    { id: 4,  projectId: 1, userId: 4, role: "Member" },
-    { id: 5,  projectId: 2, userId: 4, role: "Owner"  },
-    { id: 6,  projectId: 2, userId: 1, role: "Member" },
-    { id: 7,  projectId: 2, userId: 3, role: "Member" },
-    { id: 8,  projectId: 3, userId: 2, role: "Owner"  },
-    { id: 9,  projectId: 3, userId: 1, role: "Member" },
-    { id: 10, projectId: 3, userId: 4, role: "Member" }
-  ];
-
-  const projectList = projects
-    .filter(p => !p.isDeleted)
-    .map(p => {
-      const owner   = users.find(u => u.id === p.ownerId);
-      const members = projectMembers.filter(m => m.projectId === p.id);
-      return { ...p, ownerName: owner ? owner.name : "Unknown", memberCount: members.length };
-    });
-
-  res.render("project-list", { projectList });
-});
-
-// Auth pages  — rendered with the layout (no duplicate HTML in those EJS files)
-app.get("/login",    (req, res) => res.render("login"));
-app.get("/register", (req, res) => res.render("register"));
-
-// Task: create form
+// Task Routes
 app.get("/task/create", (req, res) => {
-  const users    = [
-    { id: 1, name: "Nhữ Văn Tuấn" },
-    { id: 2, name: "Nguyễn Hữu Trí" },
-    { id: 3, name: "Nguyễn Văn Linh" },
-    { id: 4, name: "Nguyễn Xuân Tùng" }
-  ];
-  const projects = [{ id: 1, name: "TaskFlow - Mini Trello" }];
-  res.render("task-create", { users, projects });
+  res.render("task-create");
 });
 
-// Task: detail
-app.get("/task/:id", (req, res) => {
-  const taskId = parseInt(req.params.id, 10);
+app.get("/task/:taskId", (req, res) => {
+  const taskId = parseInt(req.params.taskId);
   const tasks = [
-    { id: 1, title: "Design login page",        assignee: "Nguyễn Xuân Tùng", deadline: "2026-04-10", priority: "High",   status: "todo"       },
-    { id: 2, title: "Build dashboard UI",        assignee: "Nhữ Văn Tuấn",     deadline: "2026-04-12", priority: "Medium", status: "inprogress" },
-    { id: 3, title: "Create task detail page",   assignee: "Nguyễn Hữu Trí",   deadline: "2026-04-11", priority: "High",   status: "inprogress" },
-    { id: 4, title: "Setup project structure",   assignee: "Nguyễn Văn Linh",  deadline: "2026-04-08", priority: "Low",    status: "done"       },
-    { id: 5, title: "Style kanban board",        assignee: "Nguyễn Xuân Tùng", deadline: "2026-04-13", priority: "Medium", status: "todo"       },
-    { id: 6, title: "Prepare comment section UI",assignee: "Nguyễn Văn Linh",  deadline: "2026-04-14", priority: "Low",    status: "done"       }
+    {
+      id: 1, projectId: 1,
+      title: "Collect requirements",
+      description: "Review assignment scope, ERD and task distribution for the team.",
+      status: "todo", priority: "high",
+      assigneeId: 1, assigneeName: "Nhữ Văn Tuấn",
+      deadline: "2026-04-10", updatedAt: "2026-04-06 11:15"
+    },
+    {
+      id: 2, projectId: 1,
+      title: "Design dashboard UI",
+      description: "Build personal dashboard, stats cards and kanban layout with EJS.",
+      status: "in_progress", priority: "medium",
+      assigneeId: 4, assigneeName: "Nguyễn Xuân Tùng",
+      deadline: "2026-04-12", updatedAt: "2026-04-08 14:20"
+    }
   ];
-
   const task = tasks.find(t => t.id === taskId);
   if (!task) return res.status(404).send("Task not found");
   res.render("task-detail", { task });
 });
 
-// Task: edit form
-app.get("/task/:id/edit", (req, res) => {
-  const taskId = parseInt(req.params.id, 10);
-  const users    = [
-    { id: 1, name: "Nhữ Văn Tuấn" },
-    { id: 2, name: "Nguyễn Hữu Trí" },
-    { id: 3, name: "Nguyễn Văn Linh" },
-    { id: 4, name: "Nguyễn Xuân Tùng" }
-  ];
-  const projects = [{ id: 1, name: "TaskFlow - Mini Trello" }];
-  const tasks = [
-    { id: 1, projectId: 1, title: "Collect requirements",   description: "Review assignment scope, ERD and task distribution for the team.", status: "todo",        priority: "high",   assigneeId: 1, deadline: "2026-04-10" },
-    { id: 2, projectId: 1, title: "Design dashboard UI",    description: "Build personal dashboard, stats cards and kanban layout with EJS.", status: "in_progress", priority: "medium", assigneeId: 4, deadline: "2026-04-12" },
-    { id: 3, projectId: 1, title: "Create task detail page",description: "Prepare task detail UI with task information and comment section.",  status: "in_progress", priority: "high",   assigneeId: 2, deadline: "2026-04-11" },
-    { id: 4, projectId: 1, title: "Setup project structure",description: "Organize views, partials, public assets and initial routing.",        status: "done",        priority: "low",    assigneeId: 3, deadline: "2026-04-08" }
-  ];
-
-  const task = tasks.find(t => t.id === taskId);
-  if (!task) return res.status(404).send("Task not found");
-  res.render("task-edit", { task, users, projects });
+app.get("/task/:taskId/edit", (req, res) => {
+  const taskId = parseInt(req.params.taskId);
+  const task = { id: taskId, title: "Sample Task", description: "Sample description" };
+  res.render("task-edit", { task });
 });
 
-// Task: delete confirmation
-app.get("/task/:id/delete", (req, res) => {
-  const taskId = parseInt(req.params.id, 10);
-  const tasks = [
-    { id: 1, projectId: 1, title: "Collect requirements",   description: "Review assignment scope, ERD and task distribution for the team.", status: "todo",        priority: "high",   assigneeId: 1, deadline: "2026-04-10" },
-    { id: 2, projectId: 1, title: "Design dashboard UI",    description: "Build personal dashboard, stats cards and kanban layout with EJS.", status: "in_progress", priority: "medium", assigneeId: 4, deadline: "2026-04-12" },
-    { id: 3, projectId: 1, title: "Create task detail page",description: "Prepare task detail UI with task information and comment section.",  status: "in_progress", priority: "high",   assigneeId: 2, deadline: "2026-04-11" },
-    { id: 4, projectId: 1, title: "Setup project structure",description: "Organize views, partials, public assets and initial routing.",        status: "done",        priority: "low",    assigneeId: 3, deadline: "2026-04-08" }
-  ];
-
-  const task = tasks.find(t => t.id === taskId);
+app.get("/task/:taskId/delete", (req, res) => {
+  const taskId = parseInt(req.params.taskId);
+  const task = { id: taskId, title: "Sample Task", description: "Sample description" };
   if (!task) return res.status(404).send("Task not found");
   res.render("task-delete", { task });
 });
 
-// ─── Start Server ─────────────────────────────────────────────────────────────
-server.listen(PORT, () => {
-  console.log(`🚀 Server is running at http://localhost:${PORT}`);
-});
+module.exports = app;

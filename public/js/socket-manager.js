@@ -1,4 +1,9 @@
-const socket = typeof io !== "undefined" ? io() : null;
+const socket = typeof io !== "undefined" ? io("http://localhost:3000", {
+  reconnection: true,
+  reconnectionDelay: 1000,
+  reconnectionDelayMax: 5000,
+  reconnectionAttempts: 5
+}) : null;
 
 if (socket) {
   // Listen for the ONLY event the backend sends
