@@ -3,12 +3,8 @@ const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const path = require("path");
 const expressLayouts = require("express-ejs-layouts");
-const mongoose = require("mongoose");
-const jwt = require("jsonwebtoken");
-const taskService = require("./services/task.service");
-const projectService = require("./services/project.service");
-const userService = require("./services/user.service");
 const auth = require("./middleware/auth.middleware");
+const dashboardController = require("./controllers/dashboard.controller");
 require("dotenv").config();
 
 const app = express();
@@ -55,81 +51,13 @@ app.use("/api/auth",          require("./routes/auth.routes"));
 
 // ─── View Routes ─────────────────────────────────────────────────────────────
 
-app.get("/", (req, res) => {
-  res.render("dashboard", {
-    landingMode: true,
-    currentProject: null,
-    currentProjectMembers: [],
-    activeTasks: [],
-    totalTasks: 0,
-    overdueTasks: 0,
-    inProgressTasks: 0,
-    doneTasks: 0
-  });
-});
+app.get("/", dashboardController.showLanding);
 
-app.get("/login", (req, res) => {
-  res.render("login", { isLoggedIn: false });
-});
+app.get("/login", dashboardController.showLogin);
 
-app.get("/register", (req, res) => {
-  res.render("register", { isLoggedIn: false });
-});
+app.get("/register", dashboardController.showRegister);
 
-
-// Dashboard
-app.get("/dashboard", auth.ensureAuthenticated, async (req, res) => {
-  try {
-    const currentProject = await projectService.getProjects().then(projects => projects[0] || null);
-    let activeTasks = [];
-    let currentProjectMembers = [];
-
-    if (currentProject) {
-      activeTasks = await taskService.getTasksByProject(currentProject._id);
-      activeTasks = activeTasks.map(task => ({
-        ...task.toObject ? task.toObject() : task,
-        id: task._id,
-        assigneeName: task.assignee?.fullName || "Unassigned"
-      }));
-
-      currentProjectMembers = currentProject.members?.map(member => ({
-        userId: member.user,
-        name: member.name || "Team member",
-        github: member.github || "",
-        dob: member.dob || "",
-        avatar: member.avatar || "/images/avatar-placeholder.png",
-        role: member.role || "Member"
-      })) || [];
-    }
-
-    res.render("dashboard", {
-      landingMode: false,
-      currentProject,
-      currentProjectMembers,
-      activeTasks,
-      totalTasks: activeTasks.length,
-      overdueTasks: activeTasks.filter(task => {
-        const deadline = task.deadline ? new Date(task.deadline) : null;
-        return deadline instanceof Date && !isNaN(deadline) && deadline < new Date() && task.status !== "done";
-      }).length,
-      inProgressTasks: activeTasks.filter(task => task.status === "in_progress").length,
-      doneTasks: activeTasks.filter(task => task.status === "done").length
-    });
-  } catch (error) {
-    console.error(error);
-
-    res.render("dashboard", {
-      landingMode: false,
-      currentProject: null,
-      currentProjectMembers: [],
-      activeTasks: [],
-      totalTasks: 0,
-      overdueTasks: 0,
-      inProgressTasks: 0,
-      doneTasks: 0
-    });
-  }
-});
+app.get("/dashboard", auth.ensureAuthenticated, dashboardController.showDashboard);
 
 // Task Routes
 app.get("/task/create", (req, res) => {

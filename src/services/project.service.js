@@ -12,6 +12,16 @@ exports.getProjects = async () => {
   return await Project.find();
 };
 
+exports.getLatestProjectWithMembers = async () => {
+  return await Project.findOne()
+    .sort({ createdAt: -1 })
+    .populate({
+      path: "members.user",
+      select: "fullName avatar github dob"
+    })
+    .lean();
+};
+
 exports.updateProject = async (id, data, userId) => {
   const project = await Project.findById(id);
   
