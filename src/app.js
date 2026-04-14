@@ -31,6 +31,8 @@ app.use("/api/activities",    require("./routes/activity.routes"));
 // Auth routes used by login.ejs (/api/auth/login) and register.ejs (/api/auth/register)
 app.use("/api/auth",          require("./routes/auth.routes"));
 
+
+
 // ─── View Routes ─────────────────────────────────────────────────────────────
 
 app.get("/", (req, res) => {
@@ -45,6 +47,15 @@ app.get("/", (req, res) => {
     doneTasks: 0
   });
 });
+
+app.get("/login", (req, res) => {
+  res.render("login", { isLoggedIn: false });
+});
+
+app.get("/register", (req, res) => {
+  res.render("register", { isLoggedIn: false });
+});
+
 
 // Dashboard
 app.get("/dashboard", (req, res) => {

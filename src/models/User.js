@@ -11,18 +11,13 @@ const schema = new mongoose.Schema({
 }, { timestamps: true });
 
 // Hash password before saving
-schema.pre("save", async function(next) {
-  try {
-    // Only hash the password if it has been modified (or is new)
-    if (!this.isModified("password")) return next();
+schema.pre("save", async function() {
+  // Only hash the password if it has been modified (or is new)
+  if (!this.isModified("password")) return;
 
-    // Hash password with cost of 12
-    const hashedPassword = await bcrypt.hash(this.password, 12);
-    this.password = hashedPassword;
-    next();
-  } catch (error) {
-    next(error);
-  }
+  // Hash password with cost of 12
+  const hashedPassword = await bcrypt.hash(this.password, 12);
+  this.password = hashedPassword;
 });
 
 // Compare password method
