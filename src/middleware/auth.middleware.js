@@ -17,6 +17,21 @@ exports.verifyToken = async (req, res, next) => {
   }
 };
 
+exports.ensureAuthenticated = async (req, res, next) => {
+  try {
+    const token = req.cookies.accessToken;
+    if (!token) {
+      return res.redirect('/login');
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.userId = decoded.userId;
+    next();
+  } catch (error) {
+    return res.redirect('/login');
+  }
+};
+
 // Check if user is Owner
 exports.isOwner = async (req, res, next) => {
   try {

@@ -5,8 +5,8 @@ const schema = new mongoose.Schema({
   title: String,
   description: String,
 
-  status: { type: String, enum: ["To Do", "In Progress", "Done"] },
-  priority: { type: String, enum: ["Low", "Medium", "High"] },
+  status: { type: String, enum: ["todo", "in_progress", "done"] },
+  priority: { type: String, enum: ["low", "medium", "high"] },
 
   assignee: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },

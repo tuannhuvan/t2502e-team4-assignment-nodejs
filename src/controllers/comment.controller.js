@@ -4,7 +4,11 @@ const userService = require("../services/user.service");
 const Task = require("../models/Task");
 
 exports.create = async (req, res) => {
-  const data = await service.createComment(req.body);
+  const commentData = {
+    ...req.body,
+    user: req.userId
+  };
+  const data = await service.createComment(commentData);
   if (!data) {
     return res.status(400).json({ message: "Failed to create comment" });
   }
@@ -30,5 +34,11 @@ exports.create = async (req, res) => {
 
 exports.getByTask = async (req, res) => {
   const data = await service.getByTask(req.params.taskId);
-  res.json(data);
+  // Transform user.fullName to authorName
+  const transformed = data.map(c => ({
+    ...c,
+    id: c._id,
+    authorName: c.user?.fullName || "Unknown"
+  }));
+  res.json(transformed);
 };

@@ -5,11 +5,15 @@ exports.createTask = async (data) => {
 };
 
 exports.getTasksByProject = async (projectId) => {
-  return await Task.find({ project: projectId });
+  return await Task.find({ projectId }).populate("assignee", "fullName");
+};
+
+exports.getTaskById = async (id) => {
+  return await Task.findById(id).populate("assignee", "fullName").lean();
 };
 
 exports.updateTask = async (id, data) => {
-  return await Task.findByIdAndUpdate(id, data, { new: true });
+  return await Task.findByIdAndUpdate(id, data, { new: true }).populate("assignee", "fullName");
 };
 
 exports.deleteTask = async (id) => {

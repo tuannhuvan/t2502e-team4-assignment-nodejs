@@ -3,7 +3,12 @@ const notificationSocket = require("../sockets/index");
 const userService = require("../services/user.service");
 
 exports.create = async (req, res) => {
-  const data = await service.createTask(req.body);
+  // Transform assigneeId to assignee for the model
+  const taskData = {
+    ...req.body,
+    assignee: req.body.assigneeId
+  };
+  const data = await service.createTask(taskData);
   res.json(data);
 };
 
@@ -13,7 +18,15 @@ exports.getByProject = async (req, res) => {
 };
 
 exports.update = async (req, res) => {
-  const data = await service.updateTask(req.params.id, req.body);
+  // Transform assigneeId to assignee if provided
+  const taskData = {
+    ...req.body
+  };
+  if (req.body.assigneeId) {
+    taskData.assignee = req.body.assigneeId;
+    delete taskData.assigneeId;
+  }
+  const data = await service.updateTask(req.params.id, taskData);
   if (!data) {
     return res.status(404).json({ message: "Task not found" });
   }

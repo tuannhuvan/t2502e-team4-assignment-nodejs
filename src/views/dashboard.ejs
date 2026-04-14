@@ -1,18 +1,4 @@
-<%
-  function getAge(dob) {
-    const birth = new Date(dob);
-    const today = new Date();
-    let age = today.getFullYear() - birth.getFullYear();
-    const monthDiff = today.getMonth() - birth.getMonth();
-    const dayDiff = today.getDate() - birth.getDate();
-
-    if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
-      age--;
-    }
-
-    return age;
-  }
-%>
+<% function getAge(dob) { const birth = new Date(dob); const today = new Date(); let age = today.getFullYear() - birth.getFullYear(); const monthDiff = today.getMonth() - birth.getMonth(); const dayDiff = today.getDate() - birth.getDate(); if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) { age--; } return age; } %>
 
 <script>
   function allowDrop(event) {
@@ -43,156 +29,193 @@
 </script>
 
 <div class="page">
-  <p class="page-subtitle">Project Dashboard + Kanban Board</p>
+  <p class="page-subtitle"><%= landingMode ? "Welcome to TaskFlow. Log in or register to unlock your full dashboard experience." : "Project Dashboard + Kanban Board" %></p>
 
-  <section class="project-overview">
-    <div class="project-summary-card">
-      <div class="project-summary-top">
-        <div>
-          <p class="project-label">Current Project</p>
-          <h2><%= currentProject.name %></h2>
-        </div>
-        <span class="project-badge">Active</span>
-      </div>
+  <% if (landingMode) { %>
+    <section class="landing-preview">
+      <div class="landing-card">
+        <h2>Discover TaskFlow</h2>
+        <p>TaskFlow keeps your projects, tasks, and teams organized in one place. Sign in to open the full workspace.</p>
 
-      <p class="project-description"><%= currentProject.description %></p>
-
-      <div class="project-meta-grid">
-        <div class="project-meta-item">
-          <span class="meta-title">Owner</span>
-          <strong><%= currentProject.ownerName %></strong>
-        </div>
-
-        <div class="project-meta-item">
-          <span class="meta-title">Members</span>
-          <strong><%= currentProject.memberCount %></strong>
+        <div class="landing-features">
+          <div class="feature-item">
+            <h3>Kanban board</h3>
+            <p>See progress across todo, in progress, and done.</p>
+          </div>
+          <div class="feature-item">
+            <h3>Project overview</h3>
+            <p>Track active projects and team collaboration at a glance.</p>
+          </div>
+          <div class="feature-item">
+            <h3>Task stats</h3>
+            <p>Monitor totals, overdue work, and completed tasks.</p>
+          </div>
         </div>
 
-        <div class="project-meta-item">
-          <span class="meta-title">Created At</span>
-          <strong><%= currentProject.createdAt %></strong>
-        </div>
-
-        <div class="project-meta-item">
-          <span class="meta-title">Updated At</span>
-          <strong><%= currentProject.updatedAt %></strong>
+        <div class="landing-actions">
+          <a href="/login" class="btn-primary">Login</a>
+          <a href="/register" class="btn-secondary">Register</a>
         </div>
       </div>
-    </div>
-  </section>
-
-  <section class="team">
-    <h2>👥 Project Members</h2>
-
-    <div class="team-list">
-      <% currentProjectMembers.forEach(member => { %>
-        <div class="team-card <%= member.role === 'Owner' ? 'leader-card' : '' %>">
-          <div class="member-header">
-            <img src="<%= member.avatar %>" alt="<%= member.name %>" class="member-avatar">
-            <h3><%= member.name %></h3>
+    </section>
+  <% } else { %>
+    <section class="project-overview">
+      <div class="project-info-card">
+        <% if (locals.currentProject) { %>
+          <div class="project-main-info">
+            <div class="project-icon">📁</div>
+            <div>
+              <p class="project-label">Current Project</p>
+              <h2><%= currentProject.name %></h2>
+            </div>
+            <span class="project-badge">Active</span>
           </div>
-
-          <p><strong>Project Role:</strong> <%= member.role %></p>
-          <p><strong>GitHub:</strong> <%= member.github %></p>
-          <p><strong>DOB:</strong> <%= member.dob %></p>
-          <p><strong>Age:</strong> <%= getAge(member.dob) %></p>
-          <p><strong>User ID:</strong> <%= member.userId %></p>
-        </div>
-      <% }) %>
-    </div>
-  </section>
-
-  <section class="stats">
-    <div class="stat-card">
-      <h3>Total Tasks</h3>
-      <p><%= totalTasks %></p>
-    </div>
-
-    <div class="stat-card">
-      <h3>Overdue</h3>
-      <p><%= overdueTasks %></p>
-    </div>
-
-    <div class="stat-card">
-      <h3>In Progress</h3>
-      <p><%= inProgressTasks %></p>
-    </div>
-
-    <div class="stat-card">
-      <h3>Done</h3>
-      <p><%= doneTasks %></p>
-    </div>
-  </section>
-
-  <div class="board-toolbar">
-    <div>
-      <h2 class="board-title">Task Board</h2>
-      <p class="board-subtitle">Manage tasks by status and track project progress</p>
-    </div>
-  </div>
-
-  <section class="board">
-    <div class="column drop-zone" data-status="todo" ondrop="dropTask(event)" ondragover="allowDrop(event)">
-      <h2>To Do</h2>
-
-      <% activeTasks.filter(task => task.status === "todo").forEach(task => { %>
-        <div class="task-card" id="task-<%= task.id %>" draggable="true" ondragstart="dragTask(event)">
-          <div class="task-card-top">
-            <h4><%= task.title %></h4>
-            <span class="priority <%= task.priority.toLowerCase() %>"><%= task.priority %></span>
+          <p class="project-description"><%= currentProject.description %></p>
+        <% } else { %>
+          <div class="project-main-info">
+            <h2>No Project Selected</h2>
+            <p>Please select a project from the list to view tasks.</p>
           </div>
+        <% } %>
+      </div>
+    </section>
 
-          <p class="task-description"><%= task.description %></p>
-          <p>👤 <%= task.assigneeName %></p>
-          <p>📅 <%= task.deadline %></p>
-          <p>🧩 Project ID: <%= task.projectId %></p>
-          <p>🕒 Updated: <%= task.updatedAt %></p>
+    <section class="stats">
+      <div class="stat-card">
+        <h3>Total Tasks</h3>
+        <p><%= totalTasks %></p>
+      </div>
+      <div class="stat-card">
+        <h3>Overdue</h3>
+        <p><%= overdueTasks %></p>
+      </div>
+      <div class="stat-card">
+        <h3>In Progress</h3>
+        <p><%= inProgressTasks %></p>
+      </div>
+      <div class="stat-card">
+        <h3>Done</h3>
+        <p><%= doneTasks %></p>
+      </div>
+    </section>
 
-          <a href="/task/<%= task.id %>" class="task-detail-link">View detail</a>
-        </div>
-      <% }) %>
+    <div class="board-toolbar">
+      <div>
+        <h2 class="board-title">Task Board</h2>
+        <p class="board-subtitle">Manage tasks by status and track project progress</p>
+      </div>
     </div>
 
-    <div class="column drop-zone" data-status="in_progress" ondrop="dropTask(event)" ondragover="allowDrop(event)">
-      <h2>In Progress</h2>
-
-      <% activeTasks.filter(task => task.status === "in_progress").forEach(task => { %>
-        <div class="task-card" id="task-<%= task.id %>" draggable="true" ondragstart="dragTask(event)">
-          <div class="task-card-top">
-            <h4><%= task.title %></h4>
-            <span class="priority <%= task.priority.toLowerCase() %>"><%= task.priority %></span>
+    <section class="board">
+      <div class="column drop-zone" data-status="todo" ondrop="dropTask(event)" ondragover="allowDrop(event)">
+        <h2>To Do</h2>
+        <% activeTasks.filter(task => task.status === "todo").forEach(task => { %>
+          <div class="task-card" id="task-<%= task.id %>" draggable="true" ondragstart="dragTask(event)">
+            <div class="task-card-top">
+              <h4><%= task.title %></h4>
+              <span class="priority <%= task.priority.toLowerCase() %>"><%= task.priority %></span>
+            </div>
+            <p class="task-description"><%= task.description %></p>
+            <p>👤 <%= task.assigneeName %></p>
+            <p>📅 <%= task.deadline %></p>
+            <p>🧩 Project ID: <%= task.projectId %></p>
+            <p>🕒 Updated: <%= task.updatedAt %></p>
+            <a href="/task/<%= task.id %>" class="task-detail-link">View detail</a>
           </div>
+        <% }) %>
+      </div>
 
-          <p class="task-description"><%= task.description %></p>
-          <p>👤 <%= task.assigneeName %></p>
-          <p>📅 <%= task.deadline %></p>
-          <p>🧩 Project ID: <%= task.projectId %></p>
-          <p>🕒 Updated: <%= task.updatedAt %></p>
-
-          <a href="/task/<%= task.id %>" class="task-detail-link">View detail</a>
-        </div>
-      <% }) %>
-    </div>
-
-    <div class="column drop-zone" data-status="done" ondrop="dropTask(event)" ondragover="allowDrop(event)">
-      <h2>Done</h2>
-
-      <% activeTasks.filter(task => task.status === "done").forEach(task => { %>
-        <div class="task-card" id="task-<%= task.id %>" draggable="true" ondragstart="dragTask(event)">
-          <div class="task-card-top">
-            <h4><%= task.title %></h4>
-            <span class="priority <%= task.priority.toLowerCase() %>"><%= task.priority %></span>
+      <div class="column drop-zone" data-status="in_progress" ondrop="dropTask(event)" ondragover="allowDrop(event)">
+        <h2>In Progress</h2>
+        <% activeTasks.filter(task => task.status === "in_progress").forEach(task => { %>
+          <div class="task-card" id="task-<%= task.id %>" draggable="true" ondragstart="dragTask(event)">
+            <div class="task-card-top">
+              <h4><%= task.title %></h4>
+              <span class="priority <%= task.priority.toLowerCase() %>"><%= task.priority %></span>
+            </div>
+            <p class="task-description"><%= task.description %></p>
+            <p>👤 <%= task.assigneeName %></p>
+            <p>📅 <%= task.deadline %></p>
+            <p>🧩 Project ID: <%= task.projectId %></p>
+            <p>🕒 Updated: <%= task.updatedAt %></p>
+            <a href="/task/<%= task.id %>" class="task-detail-link">View detail</a>
           </div>
+        <% }) %>
+      </div>
 
-          <p class="task-description"><%= task.description %></p>
-          <p>👤 <%= task.assigneeName %></p>
-          <p>📅 <%= task.deadline %></p>
-          <p>🧩 Project ID: <%= task.projectId %></p>
-          <p>🕒 Updated: <%= task.updatedAt %></p>
+      <div class="column drop-zone" data-status="done" ondrop="dropTask(event)" ondragover="allowDrop(event)">
+        <h2>Done</h2>
+        <% activeTasks.filter(task => task.status === "done").forEach(task => { %>
+          <div class="task-card" id="task-<%= task.id %>" draggable="true" ondragstart="dragTask(event)">
+            <div class="task-card-top">
+              <h4><%= task.title %></h4>
+              <span class="priority <%= task.priority.toLowerCase() %>"><%= task.priority %></span>
+            </div>
+            <p class="task-description"><%= task.description %></p>
+            <p>👤 <%= task.assigneeName %></p>
+            <p>📅 <%= task.deadline %></p>
+            <p>🧩 Project ID: <%= task.projectId %></p>
+            <p>🕒 Updated: <%= task.updatedAt %></p>
+            <a href="/task/<%= task.id %>" class="task-detail-link">View detail</a>
+          </div>
+        <% }) %>
+      </div>
+    </section>
 
-          <a href="/task/<%= task.id %>" class="task-detail-link">View detail</a>
-        </div>
-      <% }) %>
-    </div>
-  </section>
+    <section class="team">
+      <h2>👥 Project Members</h2>
+      <div class="team-list">
+        <% if (locals.currentProjectMembers && currentProjectMembers.length > 0) { %>
+          <% currentProjectMembers.forEach(member => { %>
+            <div class="team-card <%= member.role === 'Owner' ? 'leader-card' : '' %>">
+              <div class="member-header">
+                <img src="<%= member.avatar %>" alt="<%= member.name %>" class="member-avatar">
+                <h3><%= member.name %></h3>
+              </div>
+              <p><strong>Project Role:</strong> <%= member.role %></p>
+              <p><strong>GitHub:</strong> <%= member.github %></p>
+              <p><strong>DOB:</strong> <%= member.dob %></p>
+              <p><strong>Age:</strong> <%= getAge(member.dob) %></p>
+              <p><strong>User ID:</strong> <%= member.userId %></p>
+            </div>
+          <% }) %>
+        <% } else { %>
+          <p>No team members assigned to this project yet.</p>
+        <% } %>
+      </div>
+    </section>
+  <% } %>
 </div>
+
+<script>
+  async function dropTaskWithUpdate(event) {
+    event.preventDefault();
+    const taskId = event.dataTransfer.getData("text/plain");
+    const taskCard = document.getElementById(taskId);
+    let dropZone = event.target;
+    while (dropZone && !dropZone.classList.contains("drop-zone")) {
+      dropZone = dropZone.parentElement;
+    }
+    if (!dropZone || !taskCard) return;
+
+    const newStatus = dropZone.getAttribute("data-status");
+    const taskIdNum = taskId.replace("task-", "");
+
+    try {
+      const response = await fetch("/api/tasks/" + taskIdNum, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: newStatus })
+      });
+      if (response.ok) {
+        dropZone.appendChild(taskCard);
+      }
+    } catch (error) {
+      console.error("Failed to update task status");
+    }
+  }
+
+  document.querySelectorAll(".drop-zone").forEach(zone => {
+    zone.addEventListener("drop", dropTaskWithUpdate);
+  });
+</script>

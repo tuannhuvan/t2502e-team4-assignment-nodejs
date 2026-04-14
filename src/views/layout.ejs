@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>TaskFlow</title>
-  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/styles/style.css">
   <link rel="icon" href="/images/background.jpg">
 </head>
 <body>
@@ -17,6 +17,26 @@
   <div id="toastContainer" class="toast-container"></div>
 
   <script src="/socket.io/socket.io.js"></script>
-  <script src="/js/socket-client.js"></script>
+  <script src="/js/socket-manager.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const logoutBtn = document.getElementById("logoutBtn");
+      if (!logoutBtn) return;
+
+      logoutBtn.addEventListener("click", async () => {
+        try {
+          await fetch("/api/auth/logout", {
+            method: "POST",
+            credentials: "include"
+          });
+          window.location.href = "/";
+        } catch (err) {
+          console.error("Logout failed", err);
+          window.location.href = "/";
+        }
+      });
+    });
+  </script>
 </body>
+</html>
 </html>
