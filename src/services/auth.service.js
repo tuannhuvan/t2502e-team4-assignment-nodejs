@@ -84,6 +84,7 @@ const login = async (req, res) => {
         // Send refresh token in response (client should store this securely)
         res.status(200).json({
             message: 'Login successful',
+            redirectTo: '/dashboard',
             refreshToken,
             user: {
                 id: existingUser._id,
@@ -92,6 +93,7 @@ const login = async (req, res) => {
                 role: existingUser.role
             }
         });
+
     }
     catch (error) {
         res.status(500).json({ message: 'Server error' });

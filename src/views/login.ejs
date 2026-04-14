@@ -60,6 +60,12 @@
 
       loginMessage.textContent = data.message || "Login successful";
       loginMessage.className = "form-message success-message";
+      
+      // Redirect to dashboard after successful login
+      const redirectTo = data.redirectTo || "/dashboard";
+      setTimeout(() => {
+        window.location.href = redirectTo;
+      }, 400);
     } catch (error) {
       loginMessage.textContent = "Cannot connect to server";
       loginMessage.className = "form-message error-message";

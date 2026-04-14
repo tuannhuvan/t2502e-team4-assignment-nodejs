@@ -84,6 +84,11 @@
 
       registerMessage.textContent = data.message || "Register successful";
       registerMessage.className = "form-message success-message";
+      
+      // Redirect to login page after successful registration
+      setTimeout(() => {
+        window.location.href = "/login";
+      }, 1000);
     } catch (error) {
       registerMessage.textContent = "Cannot connect to server";
       registerMessage.className = "form-message error-message";
