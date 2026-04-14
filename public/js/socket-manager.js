@@ -6,8 +6,13 @@ const socket = typeof io !== "undefined" ? io(process.env.SOCKET_URL, {
 }) : null;
 
 if (socket) {
+  socket.on("connect", () => {
+    console.log("Socket connected:", socket.id);
+  });
+
   // Listen for the ONLY event the backend sends
   socket.on("notification", (data) => {
+      console.log("Notification received:", data);
       // data contains: title, message, type, entityType
       if (typeof showToast === "function") {
         showToast(data.message, data.type);
@@ -18,4 +23,10 @@ if (socket) {
           refreshTaskList();
       }
   });
+
+  socket.on("connect_error", (error) => {
+    console.error("Socket connection error:", error);
+  });
+} else {
+  console.warn("Socket.io library not loaded");
 }
