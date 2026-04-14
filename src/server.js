@@ -7,8 +7,8 @@ const connectDB = require('./config/db');
 // Kết nối Database
 connectDB();
 
-const EXPRESS_PORT = process.env.PORT || 5000;
-const SOCKET_PORT = process.env.SOCKET_PORT || 3000;
+const EXPRESS_PORT = process.env.PORT || 3000;
+const SOCKET_PORT = process.env.SOCKET_PORT || 5000;
 
 // Express server
 const expressServer = http.createServer(app);

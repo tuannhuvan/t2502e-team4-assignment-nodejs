@@ -32,7 +32,16 @@ app.use("/api/auth",          require("./routes/auth.routes"));
 // ─── View Routes ─────────────────────────────────────────────────────────────
 
 app.get("/", (req, res) => {
-  res.redirect("/dashboard");
+  res.render("dashboard", {
+    landingMode: true,
+    currentProject: null,
+    currentProjectMembers: [],
+    activeTasks: [],
+    totalTasks: 0,
+    overdueTasks: 0,
+    inProgressTasks: 0,
+    doneTasks: 0
+  });
 });
 
 // Dashboard
@@ -90,6 +99,7 @@ app.get("/dashboard", (req, res) => {
   ];
 
   res.render("dashboard", {
+    landingMode: false,
     currentProject,
     currentProjectMembers,
     activeTasks,

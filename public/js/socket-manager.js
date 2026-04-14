@@ -1,4 +1,4 @@
-const socket = typeof io !== "undefined" ? io("http://localhost:3000", {
+const socket = typeof io !== "undefined" ? io("http://localhost:5000", {
   reconnection: true,
   reconnectionDelay: 1000,
   reconnectionDelayMax: 5000,
