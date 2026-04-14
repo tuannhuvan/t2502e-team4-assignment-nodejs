@@ -3,6 +3,8 @@ const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const path = require("path");
 const expressLayouts = require("express-ejs-layouts");
+const mongoose = require("mongoose");
+require("dotenv").config();
 
 const app = express();
 
@@ -12,7 +14,7 @@ app.use(cookieParser());
 app.use(expressLayouts);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname, "public")));
+app.use(express.static(path.join(__dirname, "../public")));
 
 // ─── View Engine ──────────────────────────────────────────────────────────────
 app.set("layout", "layout");
