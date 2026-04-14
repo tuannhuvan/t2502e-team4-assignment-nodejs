@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const bcrypt = require("bcrypt");
 
 const schema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
@@ -8,5 +9,29 @@ const schema = new mongoose.Schema({
   role: { type: String, enum: ["Owner", "Member"], default: "Member" },
   isDeleted: { type: Boolean, default: false }
 }, { timestamps: true });
+
+// Hash password before saving
+schema.pre("save", async function(next) {
+  try {
+    // Only hash the password if it has been modified (or is new)
+    if (!this.isModified("password")) return next();
+
+    // Hash password with cost of 12
+    const hashedPassword = await bcrypt.hash(this.password, 12);
+    this.password = hashedPassword;
+    next();
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Compare password method
+schema.methods.comparePassword = async function(candidatePassword) {
+  try {
+    return await bcrypt.compare(candidatePassword, this.password);
+  } catch (error) {
+    throw error;
+  }
+};
 
 module.exports = mongoose.model("User", schema);
