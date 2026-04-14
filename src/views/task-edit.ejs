@@ -8,7 +8,7 @@
           <p class="project-label">Task Management</p>
           <h2>Edit Task</h2>
         </div>
-        <a href="/task/<%= task.id %>" class="back-link">← Back to task detail</a>
+        <a href="/task/<%= task._id %>" class="back-link">← Back to task detail</a>
       </div>
 
       <form class="task-form" id="editTaskForm">
@@ -22,7 +22,7 @@
             <label for="projectId">Project</label>
             <select id="projectId" name="projectId" required>
               <% projects.forEach(project => { %>
-                <option value="<%= project.id %>" <%= project.id === task.projectId ? "selected" : "" %>>
+                <option value="<%= project._id %>" <%= project._id.toString() === task.projectId.toString() ? "selected" : "" %>>
                   <%= project.name %>
                 </option>
               <% }) %>
@@ -56,8 +56,8 @@
             <label for="assigneeId">Assignee</label>
             <select id="assigneeId" name="assigneeId" required>
               <% users.forEach(user => { %>
-                <option value="<%= user.id %>" <%= user.id === task.assigneeId ? "selected" : "" %>>
-                  <%= user.name %>
+                <option value="<%= user._id %>" <%= user._id.toString() === (task.assignee?._id || task.assignee).toString() ? "selected" : "" %>>
+                  <%= user.fullName %>
                 </option>
               <% }) %>
             </select>
@@ -65,14 +65,14 @@
 
           <div class="form-group">
             <label for="deadline">Deadline</label>
-            <input type="date" id="deadline" name="deadline" value="<%= task.deadline %>" required>
+            <input type="date" id="deadline" name="deadline" value="<%= task.deadline ? new Date(task.deadline).toISOString().split('T')[0] : '' %>" required>
           </div>
         </div>
 
         <p id="editMessage" class="form-message"></p>
 
         <div class="form-actions">
-          <a href="/task/<%= task.id %>" class="btn-secondary">Cancel</a>
+          <a href="/task/<%= task._id %>" class="btn-secondary">Cancel</a>
           <button type="submit" class="btn-primary">Update Task</button>
         </div>
       </form>
@@ -101,7 +101,7 @@
     editMessage.className   = "form-message";
 
     try {
-      const response = await fetch("/api/tasks/<%= task.id %>", {
+      const response = await fetch("/api/tasks/<%= task._id %>", {
         method:  "PUT",
         credentials: "include",
         headers: { "Content-Type": "application/json" },

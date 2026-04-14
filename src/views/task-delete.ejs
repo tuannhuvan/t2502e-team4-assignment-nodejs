@@ -8,7 +8,7 @@
           <p class="project-label">Task Management</p>
           <h2>Delete Task</h2>
         </div>
-        <a href="/task/<%= task.id %>" class="back-link">← Back to task detail</a>
+        <a href="/task/<%= task._id %>" class="back-link">← Back to task detail</a>
       </div>
 
       <div class="delete-warning-box">
@@ -17,18 +17,18 @@
       </div>
 
       <div class="delete-task-preview">
-        <p><strong>Task ID:</strong> <%= task.id %></p>
+        <p><strong>Task ID:</strong> <%= task._id %></p>
         <p><strong>Title:</strong> <%= task.title %></p>
         <p><strong>Description:</strong> <%= task.description %></p>
         <p><strong>Status:</strong> <%= task.status %></p>
         <p><strong>Priority:</strong> <%= task.priority %></p>
-        <p><strong>Deadline:</strong> <%= task.deadline %></p>
+        <p><strong>Deadline:</strong> <%= task.deadline ? new Date(task.deadline).toLocaleDateString() : 'No deadline' %></p>
       </div>
 
       <p id="deleteMessage" class="form-message"></p>
 
       <div class="form-actions">
-        <a href="/task/<%= task.id %>" class="btn-secondary">Cancel</a>
+        <a href="/task/<%= task._id %>" class="btn-secondary">Cancel</a>
         <button type="button" class="btn-danger" id="confirmDeleteBtn">Delete Task</button>
       </div>
     </div>
@@ -42,7 +42,7 @@
     deleteMessage.className   = "form-message";
 
     try {
-      const response = await fetch("/api/tasks/<%= task.id %>", {
+      const response = await fetch("/api/tasks/<%= task._id %>", {
         method: "DELETE",
         credentials: "include",
         headers: { "Content-Type": "application/json" }
