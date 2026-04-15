@@ -15,16 +15,20 @@ const generateRefreshToken = (userId) => {
 
 const register = async (req, res) => {
     try {
-        const { username, email, password } = req.body;
-        const existingUser = await userService.getUserByEmail(email);
+        const { name, email, password, confirmPassword } = req.body;
+        const cleanEmail = email.trim().toLowerCase().trim();
+        if (password !== confirmPassword) {
+            return res.status(400).json({ message: 'Passwords do not match' });
+        }
+
+        const existingUser = await User.findOne({ email: cleanEmail });
         if (existingUser) {
             return res.status(400).json({ message: 'User already exists' });
         }
 
-        // Password hashing is now handled automatically by the User model pre-save middleware
-        const newUser = await userService.createUser({
-            fullName: username, // Map username to fullName
-            email,
+        await User.create({
+            fullName: name, // Map name to fullName
+            email: cleanEmail,
             password: password // Plain password - will be hashed by model
         });
         res.status(201).json({ message: 'User registered successfully' });
