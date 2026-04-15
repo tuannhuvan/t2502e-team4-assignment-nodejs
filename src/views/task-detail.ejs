@@ -61,11 +61,6 @@
 
   loadComments();
 
-  // Join the project room to receive real-time notifications
-  if (typeof joinProjectRoom === "function" && "<%= task.project %>") {
-    joinProjectRoom("<%= task.project %>");
-  }
-
   // Submit a new comment
   document.getElementById("commentForm").addEventListener("submit", async event => {
     event.preventDefault();

@@ -42,8 +42,8 @@ io.on("connection", (socket) => {
     }
   });
 
-  socket.on("disconnect", (reason) => {
-    console.log("Socket disconnected:", socket.id, "reason:", reason);
+  socket.on("disconnect", () => {
+    console.log("Socket disconnected:", socket.id);
   });
 });
 

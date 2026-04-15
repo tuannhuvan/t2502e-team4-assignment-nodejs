@@ -77,27 +77,6 @@
             <p>Please select a project from the list to view tasks.</p>
           </div>
         <% } %>
-
-        <% if (projectList && projectList.length > 1) { %>
-          <div class="project-switcher">
-            <label class="switcher-label" for="projectSwitcher">Switch Project</label>
-            <div class="switcher-wrapper">
-              <select
-                id="projectSwitcher"
-                class="switcher-select"
-                onchange="if(this.value) window.location.href='/dashboard?projectId=' + this.value"
-              >
-                <option value="" disabled selected>Select a project…</option>
-                <% projectList.forEach(p => { %>
-                  <option value="<%= p.id %>" <%= currentProject && currentProject._id == p.id ? 'selected' : '' %>>
-                    <%= p.name %>
-                  </option>
-                <% }) %>
-              </select>
-              <span class="switcher-arrow">▾</span>
-            </div>
-          </div>
-        <% } %>
       </div>
     </section>
 
@@ -245,75 +224,10 @@
 </script>
 
 <script>
-  if (typeof joinProjectRoom === "function" && "<%= currentProject ? currentProject._id : '' %>") {
-    const projectId = "<%= currentProject ? currentProject._id : '' %>";
-    console.log("Joining project room for:", projectId);
-    joinProjectRoom(projectId);
+  if (typeof joinProjectRoom === "function" && <%= currentProject ? 'true' : 'false' %>) {
+    console.log("Joining project room for:", <%= currentProject && currentProject._id %>);
+    joinProjectRoom(<%= currentProject && currentProject._id %>);
   } else {
     console.log("Not joining project room - no current project");
   }
 </script>
-
-<style>
-  .project-switcher {
-    margin-top: 1rem;
-    padding-top: 1rem;
-    border-top: 1px solid rgba(0, 0, 0, 0.08);
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    flex-wrap: wrap;
-  }
-
-  .switcher-label {
-    font-size: 0.78rem;
-    font-weight: 600;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-    color: #6b7280;
-    white-space: nowrap;
-  }
-
-  .switcher-wrapper {
-    position: relative;
-    flex: 1;
-    min-width: 180px;
-    max-width: 320px;
-  }
-
-  .switcher-select {
-    appearance: none;
-    -webkit-appearance: none;
-    width: 100%;
-    padding: 0.45rem 2rem 0.45rem 0.75rem;
-    font-size: 0.9rem;
-    font-weight: 500;
-    color: #111827;
-    background: #f9fafb;
-    border: 1.5px solid #e5e7eb;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: border-color 0.15s, box-shadow 0.15s;
-    outline: none;
-  }
-
-  .switcher-select:hover {
-    border-color: #9ca3af;
-  }
-
-  .switcher-select:focus {
-    border-color: #6366f1;
-    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
-    background: #fff;
-  }
-
-  .switcher-arrow {
-    position: absolute;
-    right: 0.65rem;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 0.75rem;
-    color: #6b7280;
-    pointer-events: none;
-  }
-</style>
