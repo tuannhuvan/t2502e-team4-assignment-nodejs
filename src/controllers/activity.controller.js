@@ -18,7 +18,7 @@ exports.getAll = async (req, res) => {
   }
 };
 
-exports.getProjectActivities = async (req, res) => {
+exports.getProjectFeed = async (req, res) => {
   try {
     const data = await service.getProjectActivities(req.params.projectId);
     res.json(data);
