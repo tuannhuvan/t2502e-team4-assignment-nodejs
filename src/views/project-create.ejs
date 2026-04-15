@@ -1,0 +1,23 @@
+<div class="page">
+  <h2>Create Project</h2>
+  <form id="createProjectForm">
+    <input type="text" id="name" placeholder="Project Name" required>
+    <textarea id="description" placeholder="Description" required></textarea> [cite: 52]
+    <button type="submit">Create Project</button>
+  </form>
+</div>
+
+<script>
+  document.getElementById("createProjectForm").addEventListener("submit", async e => {
+    e.preventDefault();
+    const name = document.getElementById("name").value;
+    const description = document.getElementById("description").value;
+    const res = await fetch("/api/projects", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, description }),
+      credentials: "include"
+    }); [cite: 54, 55]
+    if (res.ok) window.location.href = "/dashboard"; [cite: 56]
+  });
+</script>

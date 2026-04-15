@@ -1,0 +1,34 @@
+<div class="auth-page">
+  <div class="auth-card">
+    <h1>TaskFlow</h1>
+    <form id="loginForm">
+      <input id="email" type="email" placeholder="Email" required>
+      <input id="password" type="password" placeholder="Password" required> [cite: 42]
+      <p id="loginMessage"></p>
+      <button type="submit" class="auth-button">Login</button>
+    </form>
+    <p>Don’t have an account? <a href="/register">Create one</a></p> [cite: 43]
+  </div>
+</div>
+
+<script>
+  document.getElementById("loginForm").addEventListener("submit", async e => {
+    e.preventDefault();
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+    try {
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+        credentials: "include"
+      }); [cite: 45]
+      const data = await res.json();
+      if (res.ok) {
+        setTimeout(() => { window.location.href = data.redirectTo || "/dashboard"; }, 400); [cite: 47]
+      } else {
+        document.getElementById("loginMessage").textContent = data.message; [cite: 46]
+      }
+    } catch (err) { /* Handle error */ }
+  });
+</script>

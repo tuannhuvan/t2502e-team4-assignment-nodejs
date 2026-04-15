@@ -1,0 +1,115 @@
+/* General Reset */
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: "Segoe UI", Arial, sans-serif;
+  color: #1f2937;
+  background: #f5f7fb;
+  min-height: 100vh;
+}
+
+/* Layout */
+.page {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 32px 24px 40px;
+  position: relative;
+}
+
+.page::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 360px;
+  border-radius: 0 0 28px 28px;
+  background: linear-gradient(rgba(6, 18, 48, 0.68), rgba(6, 18, 48, 0.42)), url("/images/background.jpg");
+  background-size: cover;
+  z-index: 0;
+}
+
+.page > * { position: relative; z-index: 1; }
+
+/* Header UI */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid #e5e7eb;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.header-left h1 { margin: 0; font-size: 26px; color: #111827; }
+
+/* Buttons */
+.btn-primary {
+  background: linear-gradient(135deg, #f97316, #fb923c);
+  color: white;
+  padding: 10px 20px;
+  border-radius: 12px;
+  text-decoration: none;
+  font-weight: 700;
+  box-shadow: 0 4px 12px rgba(249, 115, 22, 0.2);
+  border: none;
+  cursor: pointer;
+}
+
+.btn-secondary {
+  background: #f3f4f6;
+  color: #374151;
+  padding: 10px 20px;
+  border-radius: 12px;
+  text-decoration: none;
+  font-weight: 600;
+  border: 1px solid #d1d5db;
+  cursor: pointer;
+}
+
+/* Kanban Board */
+.board { display: flex; gap: 20px; padding: 20px 0; }
+.column {
+  flex: 1;
+  background: #f9fafb;
+  border-radius: 20px;
+  padding: 16px;
+  min-height: 500px;
+  border-top: 4px solid #d1d5db;
+}
+
+.column[data-status="todo"] { border-top-color: #f97316; }
+.column[data-status="in_progress"] { border-top-color: #3b82f6; }
+.column[data-status="done"] { border-top-color: #22c55e; }
+
+/* Toast Notifications */
+.toast-container {
+  position: fixed;
+  top: 24px; right: 24px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.toast {
+  padding: 16px 20px;
+  border-radius: 12px;
+  color: #fff;
+  font-weight: 600;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  animation: slideIn 0.3s ease forwards;
+}
+
+.toast-success { background: #10b981; }
+.toast-error { background: #ef4444; }
+.toast-info { background: #3b82f6; }
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(100%); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.toast-hide { opacity: 0; transform: translateX(100%); transition: all 0.3s ease; }

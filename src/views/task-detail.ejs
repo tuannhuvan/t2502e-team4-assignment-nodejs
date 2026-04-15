@@ -1,0 +1,49 @@
+<div class="page">
+  <section class="task-detail-card">
+    <h2><%= task.title %></h2>
+    <p>Description: <%= task.description %></p>
+    <p>Status: <%= task.status %></p> [cite: 94]
+    <p>Deadline: <%= task.deadline ? new Date(task.deadline).toLocaleDateString() : 'No deadline' %></p> [cite: 95]
+    <div class="detail-actions">
+      <a href="/task/<%= task._id %>/edit" class="btn-primary">Edit Task</a>
+      <a href="/task/<%= task._id %>/delete" class="btn-danger">Delete Task</a>
+    </div>
+  </section>
+
+  <section class="comment-section">
+    <h3>Comments</h3>
+    <div id="commentList"></div> [cite: 96]
+    <form id="commentForm">
+      <textarea id="commentText" required></textarea>
+      <button type="submit">Add Comment</button>
+    </form>
+  </section>
+</div>
+
+<script>
+  async function loadComments() {
+    const res = await fetch(`/api/comments/${"<%= task._id %>"}`, { credentials: "include" }); [cite: 97, 98]
+    if (res.ok) {
+      const data = await res.json();
+      document.getElementById("commentList").innerHTML = data.map(c => `
+        <div class="comment-item"><b>${c.authorName}</b>: ${c.content}</div>
+      `).join(""); [cite: 99]
+    }
+  }
+  loadComments();
+
+  document.getElementById("commentForm").addEventListener("submit", async e => {
+    e.preventDefault();
+    const content = document.getElementById("commentText").value;
+    const res = await fetch("/api/comments", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ task: "<%= task._id %>", content }),
+      credentials: "include"
+    }); [cite: 100]
+    if (res.ok) {
+      document.getElementById("commentText").value = "";
+      loadComments(); [cite: 101]
+    }
+  });
+</script>

@@ -1,0 +1,18 @@
+<div class="page">
+  <div class="page-toolbar">
+    <h2>Project List</h2>
+    <a href="/project/create" class="btn-primary">+ Create Project</a>
+  </div>
+  <section class="project-list-grid">
+    <% projectList.forEach(project => { %>
+      <div class="project-list-card">
+        <h3><%= project.name %></h3>
+        <p><%= project.description %></p>
+        <div class="project-list-meta">
+          <p>Owner: <%= project.ownerName %></p> [cite: 60]
+          <a href="/dashboard" class="btn-secondary">View Project</a>
+        </div>
+      </div>
+    <% }) %>
+  </section>
+</div>

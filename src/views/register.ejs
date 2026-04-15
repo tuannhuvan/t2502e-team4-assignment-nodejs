@@ -1,0 +1,32 @@
+<div class="auth-page">
+  <div class="auth-card">
+    <h1>TaskFlow</h1>
+    <form id="registerForm">
+      <input id="name" type="text" placeholder="Full Name" required>
+      <input id="email" type="email" placeholder="Email" required>
+      <input id="password" type="password" placeholder="Password" required>
+      <input id="confirmPassword" type="password" placeholder="Confirm Password" required> [cite: 63]
+      <p id="registerMessage"></p>
+      <button type="submit" class="auth-button">Register</button>
+    </form>
+  </div>
+</div>
+
+<script>
+  document.getElementById("registerForm").addEventListener("submit", async e => {
+    e.preventDefault();
+    const formData = {
+      name: document.getElementById("name").value,
+      email: document.getElementById("email").value,
+      password: document.getElementById("password").value,
+      confirmPassword: document.getElementById("confirmPassword").value
+    }; [cite: 66]
+    if (formData.password !== formData.confirmPassword) return alert("Passwords do not match");
+    const res = await fetch("/api/auth/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(formData)
+    }); [cite: 67, 68]
+    if (res.ok) window.location.href = "/login"; [cite: 69]
+  });
+</script>

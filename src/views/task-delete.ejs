@@ -1,0 +1,22 @@
+<div class="page">
+  <div class="delete-card">
+    <h2>Delete Task</h2>
+    <div class="delete-warning-box">
+      <h3>Are you sure you want to delete: <%= task.title %>?</h3> [cite: 86]
+    </div>
+    <div class="form-actions">
+      <a href="/task/<%= task._id %>" class="btn-secondary">Cancel</a>
+      <button type="button" class="btn-danger" id="confirmDeleteBtn">Confirm Delete</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.getElementById("confirmDeleteBtn").addEventListener("click", async () => {
+    const res = await fetch(`/api/tasks/${"<%= task._id %>"}`, {
+      method: "DELETE",
+      credentials: "include"
+    }); [cite: 88, 89]
+    if (res.ok) window.location.href = "/dashboard"; [cite: 90, 91]
+  });
+</script>

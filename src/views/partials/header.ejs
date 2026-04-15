@@ -1,0 +1,20 @@
+<header class="page-header">
+  <div class="header-left">
+    <h1>🚀 TaskFlow</h1>
+    <% if (locals.currentProject) { %>
+      <p>Dự án hiện tại: <strong><%= currentProject.name %></strong></p>
+    <% } %>
+  </div>
+
+  <div class="header-right">
+    <% if (locals.isLoggedIn) { %>
+      <a href="/dashboard" class="btn-secondary">Bảng điều khiển</a>
+      <a href="/project/list" class="btn-secondary">Dự án</a>
+      <a href="/task/create" class="btn-primary">+ Tạo công việc</a>
+      <button id="logoutBtn" class="btn-secondary">Đăng xuất</button>
+    <% } else { %>
+      <a href="/login" class="btn-secondary">Đăng nhập</a>
+      <a href="/register" class="btn-primary">Đăng ký</a>
+    <% } %>
+  </div>
+</header>

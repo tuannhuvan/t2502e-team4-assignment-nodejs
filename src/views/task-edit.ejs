@@ -1,0 +1,41 @@
+<div class="page">
+  <h2>Edit Task</h2>
+  <form id="editTaskForm">
+    <input type="text" id="title" value="<%= task.title %>" required>
+    <select id="projectId">
+      <% projects.forEach(p => { %>
+        <option value="<%= p._id %>" <%= p._id.toString() === task.projectId.toString() ? 'selected' : '' %>>
+          <%= p.name %>
+        </option> [cite: 105, 106]
+      <% }) %>
+    </select>
+    <textarea id="description" required><%= task.description %></textarea> [cite: 107]
+    <select id="status">
+      <option value="todo" <%= task.status === 'todo' ? [cite_start]'selected' : '' %>>To Do</option> [cite: 108]
+      <option value="in_progress" <%= task.status === 'in_progress' ? [cite_start]'selected' : '' %>>In Progress</option> [cite: 109]
+      <option value="done" <%= task.status === 'done' ? [cite_start]'selected' : '' %>>Done</option> [cite: 110]
+    </select>
+    <input type="date" id="deadline" value="<%= task.deadline ? new Date(task.deadline).toISOString().split('T')[0] : '' %>"> [cite: 115]
+    <button type="submit">Update Task</button>
+  </form>
+</div>
+
+<script>
+  document.getElementById("editTaskForm").addEventListener("submit", async e => {
+    e.preventDefault();
+    const data = {
+      title: document.getElementById("title").value,
+      projectId: document.getElementById("projectId").value,
+      description: document.getElementById("description").value,
+      status: document.getElementById("status").value,
+      deadline: document.getElementById("deadline").value
+    }; [cite: 117, 118]
+    const res = await fetch(`/api/tasks/${"<%= task._id %>"}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+      credentials: "include"
+    }); [cite: 119, 120]
+    if (res.ok) window.location.href = "/dashboard"; [cite: 121]
+  });
+</script>
