@@ -1,0 +1,371 @@
+.board {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+}
+
+.column {
+  flex: 1;
+  padding: 18px;
+  background: rgba(249, 250, 251, 0.96);
+  transition: all 0.25s ease;
+}
+
+.column:hover {
+  box-shadow: 0 16px 30px rgba(15, 23, 42, 0.08);
+}
+
+.task-link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
+
+.task-card {
+  padding: 18px;
+  margin-bottom: 14px;
+  transition: all 0.25s ease;
+  cursor: pointer;
+}
+
+.task-link:hover .task-card {
+  transform: translateY(-4px);
+  border-color: #fdba74;
+  box-shadow: 0 14px 28px rgba(249, 115, 22, 0.12);
+}
+
+.task-card h4 {
+  margin: 0 0 14px;
+  font-size: 17px;
+  font-weight: 800;
+  color: #111827;
+}
+
+.task-card p {
+  margin: 0 0 10px;
+  color: #4b5563;
+  line-height: 1.45;
+}
+
+.priority {
+  display: inline-block;
+  margin-top: 6px;
+  padding: 7px 12px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.priority.low {
+  background: #e0f2fe;
+  color: #0369a1;
+}
+
+.priority.medium {
+  background: #fef3c7;
+  color: #b45309;
+}
+
+.priority.high {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.detail-layout {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 20px;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+.task-detail-card,
+.comment-section {
+  padding: 26px;
+}
+
+.detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.detail-header h2 {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 800;
+  color: #111827;
+}
+
+.detail-info p {
+  margin: 0 0 12px;
+  color: #4b5563;
+  line-height: 1.5;
+}
+
+.detail-description {
+  margin-top: 24px;
+}
+
+.detail-description p {
+  color: #4b5563;
+  line-height: 1.7;
+}
+
+.detail-actions {
+  margin-top: 24px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.comment-list {
+  margin-bottom: 16px;
+}
+
+.comment-item {
+  padding: 16px;
+  margin-bottom: 14px;
+  background: #f9fafb;
+}
+
+.comment-author {
+  margin: 0 0 8px;
+  font-size: 17px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.comment-text {
+  margin: 0;
+  color: #4b5563;
+  line-height: 1.6;
+}
+
+.comment-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.comment-form textarea {
+  min-height: 110px;
+  resize: vertical;
+  padding: 14px;
+  border-radius: 16px;
+  border: 1px solid #d1d5db;
+  background: #ffffff;
+  color: #111827;
+  font-family: inherit;
+  font-size: 15px;
+}
+
+.comment-form textarea:focus {
+  outline: none;
+  border-color: #fb923c;
+  box-shadow: 0 0 0 4px rgba(251, 146, 60, 0.12);
+}
+
+.comment-form button {
+  width: fit-content;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 14px;
+  background: linear-gradient(90deg, #ef4444, #f97316);
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.comment-form button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(249, 115, 22, 0.22);
+}
+
+.project-overview {
+  margin-bottom: 28px;
+}
+
+.project-summary-card {
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid #e5e7eb;
+  border-radius: 22px;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+  padding: 24px;
+}
+
+.project-summary-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.project-summary-top h2 {
+  margin: 0;
+  font-size: 28px;
+  color: #111827;
+}
+
+.project-badge {
+  display: inline-block;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: #dcfce7;
+  color: #166534;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.project-description {
+  margin: 0 0 18px;
+  color: #4b5563;
+  line-height: 1.6;
+}
+
+.project-meta-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.project-meta-item {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 14px;
+}
+
+.meta-title {
+  display: block;
+  margin-bottom: 8px;
+  color: #6b7280;
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.task-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.task-description {
+  color: #6b7280;
+  line-height: 1.5;
+}
+
+.project-list-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+}
+
+.project-list-card {
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid #e5e7eb;
+  border-radius: 22px;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+  padding: 24px;
+  transition: all 0.25s ease;
+}
+
+.project-list-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.1);
+}
+
+.project-list-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+.project-list-card-top h3 {
+  margin: 0;
+  font-size: 24px;
+  color: #111827;
+}
+
+.project-list-description {
+  margin: 0 0 18px;
+  color: #4b5563;
+  line-height: 1.6;
+}
+
+.project-list-meta {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.project-list-meta p {
+  margin: 0;
+  color: #374151;
+  line-height: 1.5;
+}
+
+.project-list-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.column:nth-child(1) {
+  border-top: 4px solid #f97316;
+}
+
+.column:nth-child(2) {
+  border-top: 4px solid #3b82f6;
+}
+
+.column:nth-child(3) {
+  border-top: 4px solid #22c55e;
+}
+
+@media (max-width: 1200px) {
+  .team-list,
+  .stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .board,
+  .detail-layout {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 1200px) {
+  .project-meta-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 900px) {
+  .page-toolbar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .project-list-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 700px) {
+  .team-list,
+  .stats {
+    grid-template-columns: 1fr;
+  }
+}
