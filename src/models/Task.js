@@ -1,3 +1,5 @@
+const mongoose = require("mongoose");
+
 const schema = new mongoose.Schema({
   projectId: { type: mongoose.Schema.Types.ObjectId, ref: "Project" },
   title: String,
