@@ -25,9 +25,9 @@
   </script>
   
   <script src="/socket.io/socket.io.js"></script>
-  <script src="/js/socket-manager.js"></script>
-  <!-- Toastify JS -->
+  <!-- Toastify JS must load before socket-manager so it's available when notifications arrive -->
   <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+  <script src="/js/socket-manager.js"></script>
   <script>
     document.addEventListener("DOMContentLoaded", () => {
       const logoutBtn = document.getElementById("logoutBtn");

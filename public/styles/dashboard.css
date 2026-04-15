@@ -369,3 +369,49 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* ── Toastify overrides ──────────────────────────────────────────────── */
+.toastify {
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 16px !important;
+  padding: 14px 20px !important;
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.14) !important;
+  max-width: 360px;
+  line-height: 1.5;
+}
+
+/* Success — green accent */
+.toastify[style*="background: green"],
+.toastify[style*="background:green"] {
+  background: linear-gradient(135deg, #16a34a, #22c55e) !important;
+}
+
+/* Warning — orange accent */
+.toastify[style*="background: orange"],
+.toastify[style*="background:orange"] {
+  background: linear-gradient(135deg, #d97706, #f97316) !important;
+}
+
+/* Error — red accent */
+.toastify[style*="background: red"],
+.toastify[style*="background:red"] {
+  background: linear-gradient(135deg, #dc2626, #ef4444) !important;
+}
+
+/* Info — blue accent */
+.toastify[style*="background: blue"],
+.toastify[style*="background:blue"] {
+  background: linear-gradient(135deg, #2563eb, #3b82f6) !important;
+}
+
+.toastify .toast-close {
+  font-size: 18px;
+  opacity: 0.7;
+  margin-left: 12px;
+}
+
+.toastify .toast-close:hover {
+  opacity: 1;
+}
