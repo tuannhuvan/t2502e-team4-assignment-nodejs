@@ -107,7 +107,7 @@
     </div>
 
     <section class="board">
-      <div class="column drop-zone" data-status="todo" ondrop="dropTask(event)" ondragover="allowDrop(event)">
+      <div class="column drop-zone" data-status="todo" ondrop="dropTaskWithUpdate(event)" ondragover="allowDrop(event)">
         <h2>To Do</h2>
         <% activeTasks.filter(task => task.status === "todo").forEach(task => { %>
           <div class="task-card" id="task-<%= task.id %>" draggable="true" ondragstart="dragTask(event)">
@@ -125,7 +125,7 @@
         <% }) %>
       </div>
 
-      <div class="column drop-zone" data-status="in_progress" ondrop="dropTask(event)" ondragover="allowDrop(event)">
+      <div class="column drop-zone" data-status="in_progress" ondrop="dropTaskWithUpdate(event)" ondragover="allowDrop(event)">
         <h2>In Progress</h2>
         <% activeTasks.filter(task => task.status === "in_progress").forEach(task => { %>
           <div class="task-card" id="task-<%= task.id %>" draggable="true" ondragstart="dragTask(event)">
@@ -143,7 +143,7 @@
         <% }) %>
       </div>
 
-      <div class="column drop-zone" data-status="done" ondrop="dropTask(event)" ondragover="allowDrop(event)">
+      <div class="column drop-zone" data-status="done" ondrop="dropTaskWithUpdate(event)" ondragover="allowDrop(event)">
         <h2>Done</h2>
         <% activeTasks.filter(task => task.status === "done").forEach(task => { %>
           <div class="task-card" id="task-<%= task.id %>" draggable="true" ondragstart="dragTask(event)">
@@ -215,8 +215,13 @@
       console.error("Failed to update task status");
     }
   }
+</script>
 
-  document.querySelectorAll(".drop-zone").forEach(zone => {
-    zone.addEventListener("drop", dropTaskWithUpdate);
-  });
+<script>
+  if (typeof joinProjectRoom === "function" && <%= currentProject ? 'true' : 'false' %>) {
+    console.log("Joining project room for:", <%= currentProject && currentProject._id %>);
+    joinProjectRoom(<%= currentProject && currentProject._id %>);
+  } else {
+    console.log("Not joining project room - no current project");
+  }
 </script>

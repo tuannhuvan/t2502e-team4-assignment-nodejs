@@ -13,7 +13,7 @@ exports.getTaskById = async (id) => {
 };
 
 exports.updateTask = async (id, data) => {
-  return await Task.findByIdAndUpdate(id, data, { new: true }).populate("assignee", "fullName");
+  return await Task.findByIdAndUpdate(id, data, { returnDocument: 'after' }).populate("assignee", "fullName");
 };
 
 exports.deleteTask = async (id) => {

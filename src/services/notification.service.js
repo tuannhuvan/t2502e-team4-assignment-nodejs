@@ -16,7 +16,7 @@ exports.markAsRead = async (id) => {
   return await Notification.findByIdAndUpdate(
     id,
     { isRead: true },
-    { new: true }
+    { returnDocument: 'after' }
   );
 };
 

@@ -6,6 +6,8 @@
   <title>TaskFlow</title>
   <link rel="stylesheet" href="/styles/style.css">
   <link rel="icon" href="/images/background.jpg">
+  <!-- Toastify CSS -->
+  <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
 </head>
 <body>
   <%- include("partials/header") %>
@@ -14,23 +16,7 @@
     <%- body %>
   </main>
 
-  <div id="toastContainer" class="toast-container"></div>
-
   <script>
-    // Toast notification function
-    function showToast(message, type = "info") {
-      const container = document.getElementById("toastContainer");
-      const toast = document.createElement("div");
-      toast.className = `toast ${type}`;
-      toast.textContent = message;
-      container.appendChild(toast);
-
-      // Auto-remove after 3 seconds
-      setTimeout(() => {
-        toast.remove();
-      }, 3000);
-    }
-
     // Refresh task list function (used by socket manager for task updates)
     function refreshTaskList() {
       // Reload the page to show updated tasks
@@ -38,7 +24,10 @@
     }
   </script>
   
+  <script src="/socket.io/socket.io.js"></script>
   <script src="/js/socket-manager.js"></script>
+  <!-- Toastify JS -->
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
   <script>
     document.addEventListener("DOMContentLoaded", () => {
       const logoutBtn = document.getElementById("logoutBtn");

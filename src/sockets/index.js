@@ -82,6 +82,10 @@ exports.initSocket = (server) => {
   return io;
 };
 
+exports.setIo = (socketInstance) => {
+  io = socketInstance;
+};
+
 // Universal notification emitter
 exports.emitNotification = async (options) => {
   const { projectId, userId, user: userOption, action, entityType, entityData, customMessage, additionalData = {} } = options;

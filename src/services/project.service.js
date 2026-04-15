@@ -34,7 +34,7 @@ exports.updateProject = async (id, data, userId) => {
     throw new Error("Only project owner can update this project");
   }
 
-  return await Project.findByIdAndUpdate(id, data, { new: true });
+  return await Project.findByIdAndUpdate(id, data, { returnDocument: 'after' });
 };
 
 exports.deleteProject = async (id, userId) => {

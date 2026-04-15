@@ -1,9 +1,17 @@
-const socket = typeof io !== "undefined" ? io(process.env.SOCKET_URL, {
+const socket = typeof io !== "undefined" ? io({
   reconnection: true,
   reconnectionDelay: 1000,
   reconnectionDelayMax: 5000,
   reconnectionAttempts: 5
 }) : null;
+
+window.socket = socket;
+window.joinProjectRoom = (projectId) => {
+  if (socket && projectId) {
+    socket.emit("join-project", projectId);
+    console.log("Joined project room:", projectId);
+  }
+};
 
 if (socket) {
   socket.on("connect", () => {
@@ -14,13 +22,18 @@ if (socket) {
   socket.on("notification", (data) => {
       console.log("Notification received:", data);
       // data contains: title, message, type, entityType
-      if (typeof showToast === "function") {
+      if (typeof Toastify !== "undefined") {
+        Toastify({
+          text: `${data.title}: ${data.message}`,
+          duration: 5000,
+          close: true,
+          gravity: "top", // top or bottom
+          position: "right", // left, center or right
+          backgroundColor: data.type === "success" ? "green" : data.type === "warning" ? "orange" : data.type === "error" ? "red" : "blue",
+          stopOnFocus: true, // Ngừng đếm ngược khi di chuột vào
+        }).showToast();
+      } else if (typeof showToast === "function") {
         showToast(data.message, data.type);
-      }
-
-      // Synchronize UI: if a task was updated and we are on the task page, refresh the list
-      if (data.entityType === 'task' && typeof refreshTaskList === 'function') {
-          refreshTaskList();
       }
   });
 
