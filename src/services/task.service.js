@@ -16,6 +16,14 @@ exports.getTasksByProject = async (projectId) => {
   .sort({ createdAt: 1 }); // Sắp xếp theo thứ tự tạo ra (cũ nhất đến mới nhất)
 };
 
+exports.getTaskById = async (id) => {
+  return await Task.findById(id)
+  .populate("assignees", "fullName avatar")
+  .populate("createdBy", "fullName")
+  .lean();
+};
+
+
 exports.updateTask = async (id, data) => {
   return await Task.findByIdAndUpdate(id, data, { new: true })
   .populate("assignees", "fullName email avatar");
@@ -31,4 +39,5 @@ exports.deleteTask = async (id) => {
     );
     return await Task.findByIdAndDelete(id);
   } 
+  return null;
 }; 
