@@ -10,17 +10,25 @@ exports.getAll = async (req, res) => {
   res.json(data);
 };
 
-exports.getOne = async (req, res) => {
-  const data = await service.getUserById(req.params.id);
+exports.getProfile = async (req, res) => {
+  const data = await service.getUserById(req.userId);
   res.json(data);
 };
 
 exports.update = async (req, res) => {
-  const data = await service.updateUser(req.params.id, req.body);
-  res.json(data);
+  try {
+    const data = await service.updateUser(req.userId, req.body);
+    res.json(data);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
 };
 
 exports.remove = async (req, res) => {
-  await service.deleteUser(req.params.id);
-  res.json({ msg: "Deleted" });
+  try {
+    await service.deleteUser(req.userId);
+    res.json({ msg: "User deleted" });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
 };

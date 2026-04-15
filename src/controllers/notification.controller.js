@@ -17,6 +17,7 @@ exports.getByUser = async (req, res) => {
 
 exports.markRead = async (req, res) => {
   const data = await service.markAsRead(req.params.id);
+  if (!data) return res.status(404).json({ message: "Notification not found" });
   res.json(data);
 };
 
