@@ -4,27 +4,24 @@ const userService = require("../services/user.service");
 const Task = require("../models/Task");
 
 exports.create = async (req, res) => {
-  const data = await service.createComment(req.body);
-  if (!data) {
-    return res.status(400).json({ message: "Failed to create comment" });
+  const commentData = {
+    ...req.body,
+    user: req.userId // Lưu thông tin người tạo comment
+  };
+  const data = await service.createComment(commentData);
+  if (data) {
+    const task = await Task.findById(data.task);
+    if (task) {
+      // Emit universal notification
+      await notificationSocket.emitNotification({
+        projectId: task.projectId,
+        userId: req.userId,
+        action: "đã thêm bình luận",
+        entityType: "comment",
+        entityData: data,
+      });
   }
-
-  // Get the task to find the projectId and task title
-  const task = await Task.findById(data.task);
-  if (task) {
-    // Emit universal notification
-    await notificationSocket.emitNotification({
-      projectId: task.projectId,
-      userId: req.userId,
-      action: "created",
-      entityType: "comment",
-      entityData: data,
-      additionalData: {
-        taskTitle: task.title
-      }
-    });
   }
-
   res.json(data);
 };
 
