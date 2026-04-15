@@ -4,4 +4,6 @@ obj/
 .env
 config.local.json
 # Bỏ qua tất cả các tệp log
-*.log
+*.logy.pub
+y
+y.pub
