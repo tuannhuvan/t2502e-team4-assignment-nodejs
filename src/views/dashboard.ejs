@@ -201,6 +201,8 @@
     const newStatus = dropZone.getAttribute("data-status");
     const taskIdNum = taskId.replace("task-", "");
 
+    console.log("Updating task", taskIdNum, "to status", newStatus);
+
     try {
       const response = await fetch("/api/tasks/" + taskIdNum, {
         method: "PUT",
@@ -208,11 +210,15 @@
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status: newStatus })
       });
+      console.log("Fetch response status:", response.status);
       if (response.ok) {
         dropZone.appendChild(taskCard);
+        console.log("Task updated successfully");
+      } else {
+        console.error("Failed to update task, status:", response.status);
       }
     } catch (error) {
-      console.error("Failed to update task status");
+      console.error("Failed to update task:", error);
     }
   }
 </script>

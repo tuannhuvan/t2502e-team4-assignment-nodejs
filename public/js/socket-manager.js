@@ -37,8 +37,20 @@ if (socket) {
       }
   });
 
+  socket.on("disconnect", (reason) => {
+    console.log("Socket disconnected:", socket.id, "reason:", reason);
+  });
+
   socket.on("connect_error", (error) => {
     console.error("Socket connection error:", error);
+  });
+
+  socket.on("reconnect_attempt", (attempt) => {
+    console.log("Socket reconnect attempt:", attempt);
+  });
+
+  socket.on("reconnect_failed", () => {
+    console.error("Socket reconnect failed");
   });
 } else {
   console.warn("Socket.io library not loaded");
