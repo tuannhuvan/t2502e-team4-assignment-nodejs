@@ -6,3 +6,6 @@ obj/
 config.local.json
 # Bỏ qua tất cả các tệp log
 *.log
+git
+y
+y.pub
