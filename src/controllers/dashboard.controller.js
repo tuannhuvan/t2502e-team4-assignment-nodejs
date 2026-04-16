@@ -1,6 +1,27 @@
 const projectService = require("../services/project.service");
 const taskService = require("../services/task.service");
 
+exports.showLanding = (req, res) => {
+  res.render("dashboard", {
+    landingMode: true,
+    currentProject: null,
+    activeTasks: [],
+    totalTasks: 0,
+    overdueTasks: 0,
+    inProgressTasks: 0,
+    doneTasks: 0,
+    currentProjectMembers: []
+  });
+};
+
+exports.showLogin = (req, res) => {
+  res.render("login");
+};
+
+exports.showRegister = (req, res) => {
+  res.render("register");
+};
+
 exports.showDashboard = async (req, res) => {
   try {
     // Luôn cố gắng lấy project mới nhất để hiển thị dashboard mặc định

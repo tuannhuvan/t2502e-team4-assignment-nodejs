@@ -3,11 +3,11 @@
     <h1>TaskFlow</h1>
     <form id="loginForm">
       <input id="email" type="email" placeholder="Email" required>
-      <input id="password" type="password" placeholder="Password" required> [cite: 42]
+      <input id="password" type="password" placeholder="Password" required>
       <p id="loginMessage"></p>
       <button type="submit" class="auth-button">Login</button>
     </form>
-    <p>Don’t have an account? <a href="/register">Create one</a></p> [cite: 43]
+    <p class="auth-footer">Chưa có tài khoản? <a href="/register">Đăng ký ngay</a></p>
   </div>
 </div>
 
@@ -22,13 +22,16 @@
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
         credentials: "include"
-      }); [cite: 45]
+      });
       const data = await res.json();
       if (res.ok) {
-        setTimeout(() => { window.location.href = data.redirectTo || "/dashboard"; }, 400); [cite: 47]
+        showToast("Đăng nhập thành công", "success");
+        setTimeout(() => { window.location.href = data.redirectTo || "/dashboard"; }, 600);
       } else {
-        document.getElementById("loginMessage").textContent = data.message; [cite: 46]
+        showToast(data.message || "Đăng nhập thất bại", "error");
       }
-    } catch (err) { /* Handle error */ }
+    } catch (err) {
+      showToast("Không thể kết nối máy chủ", "error");
+    }
   });
 </script>

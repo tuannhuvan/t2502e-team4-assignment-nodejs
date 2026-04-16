@@ -36,3 +36,56 @@ exports.isOwner = async (req, res, next) => {
     return res.status(500).json({ message: 'Server error' });
   }
 };
+
+// Redirect unauthenticated users to the login page
+exports.ensureAuthenticated = async (req, res, next) => {
+  try {
+    const token = req.cookies.accessToken;
+    if (!token) {
+      return res.redirect('/login');
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.userId = decoded.userId;
+    next();
+  } catch (error) {
+    res.clearCookie('accessToken');
+    return res.redirect('/login');
+  }
+};
+
+// Check if user is Admin or Owner
+exports.isAdmin = async (req, res, next) => {
+  try {
+    const user = await userService.getUserById(req.userId);
+    if (!user || user.role !== 'Owner') {
+      return res.status(403).json({ message: 'Admin access required' });
+    }
+    next();
+  } catch (error) {
+    return res.status(500).json({ message: 'Server error' });
+  }
+};
+
+// Load current user data into template locals for EJS
+exports.loadUserToLocals = async (req, res, next) => {
+  try {
+    const token = req.cookies.accessToken;
+    if (token) {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      const user = await userService.getUserById(decoded.userId);
+      if (user) {
+        res.locals.currentUser = user;
+        res.locals.isLoggedIn = true;
+        return next();
+      }
+    }
+    res.locals.currentUser = null;
+    res.locals.isLoggedIn = false;
+    next();
+  } catch (error) {
+    res.locals.currentUser = null;
+    res.locals.isLoggedIn = false;
+    next();
+  }
+};

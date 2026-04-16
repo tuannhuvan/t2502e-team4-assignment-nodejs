@@ -4,22 +4,22 @@
     <input type="text" id="title" placeholder="Task Title" required>
     <select id="projectId">
       <% projects.forEach(p => { %>
-        <option value="<%= p._id %>"><%= p.name %></option> [cite: 73]
+        <option value="<%= p._id %>"><%= p.name %></option>
       <% }) %>
     </select>
-    <textarea id="description" required></textarea> [cite: 74]
+    <textarea id="description" required></textarea>
     <select id="status">
       <option value="todo">To Do</option>
       <option value="in_progress">In Progress</option>
-      <option value="done">Done</option> [cite: 75]
+      <option value="done">Done</option>
     </select>
     <select id="assigneeId">
       <% users.forEach(u => { %>
-        <option value="<%= u._id %>"><%= u.name %></option> [cite: 77]
+        <option value="<%= u._id %>"><%= u.fullName || u.email %></option>
       <% }) %>
     </select>
-    <input type="date" id="deadline" required> [cite: 78]
-    <button type="submit">Create Task</button>
+    <input type="date" id="deadline" required>
+    <button type="submit" class="btn-primary">Create Task</button>
   </form>
 </div>
 
@@ -33,13 +33,23 @@
       status: document.getElementById("status").value,
       assigneeId: document.getElementById("assigneeId").value,
       deadline: document.getElementById("deadline").value
-    }; [cite: 80]
-    const res = await fetch("/api/tasks", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
-      credentials: "include"
-    }); [cite: 81, 82]
-    if (res.ok) window.location.href = "/dashboard"; [cite: 83]
+    };
+    try {
+      const res = await fetch("/api/tasks", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+        credentials: "include"
+      });
+      if (res.ok) {
+        showToast("Tạo công việc thành công", "success");
+        window.location.href = "/dashboard";
+      } else {
+        const data = await res.json();
+        showToast(data.message || "Tạo công việc thất bại", "error");
+      }
+    } catch (err) {
+      showToast("Không thể kết nối máy chủ", "error");
+    }
   });
 </script>

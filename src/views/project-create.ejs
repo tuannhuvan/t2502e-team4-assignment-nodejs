@@ -2,8 +2,8 @@
   <h2>Create Project</h2>
   <form id="createProjectForm">
     <input type="text" id="name" placeholder="Project Name" required>
-    <textarea id="description" placeholder="Description" required></textarea> [cite: 52]
-    <button type="submit">Create Project</button>
+    <textarea id="description" placeholder="Description" required></textarea>
+    <button type="submit" class="btn-primary">Create Project</button>
   </form>
 </div>
 
@@ -17,7 +17,7 @@
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name, description }),
       credentials: "include"
-    }); [cite: 54, 55]
-    if (res.ok) window.location.href = "/dashboard"; [cite: 56]
+    });
+    if (res.ok) window.location.href = "/dashboard";
   });
 </script>

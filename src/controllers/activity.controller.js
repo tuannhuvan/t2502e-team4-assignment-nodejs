@@ -1,7 +1,7 @@
 const service = require("../services/activity.service");
 
 exports.create = async (req, res) => {
-  try{
+  try {
     const data = await service.createLog(req.body);
     res.status(201).json(data);
   } catch (error) {
@@ -9,7 +9,8 @@ exports.create = async (req, res) => {
   }
 };
 
-exports.getAll = async (req, res) => {
+// Đổi tên để tránh nhầm lẫn và khớp với route
+exports.getAllActivities = async (req, res) => {
   try {
     const data = await service.getLogs();
     res.json(data);
@@ -28,6 +29,10 @@ exports.getProjectFeed = async (req, res) => {
 };
 
 exports.remove = async (req, res) => {
-  await service.deleteLog(req.params.id);
-  res.json({ msg: "Deleted" });
+  try {
+    await service.deleteLog(req.params.id);
+    res.json({ msg: "Deleted" });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
 };

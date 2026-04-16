@@ -1,17 +1,18 @@
 <header class="page-header">
   <div class="header-left">
-    <h1>🚀 TaskFlow</h1>
-    <% if (locals.currentProject) { %>
-      <p>Dự án hiện tại: <strong><%= currentProject.name %></strong></p>
-    <% } %>
+    <a href="/" class="brand-link">
+      <h1>🚀 TaskFlow</h1>
+      <span>Quản lý dự án và công việc cho team</span>
+    </a>
   </div>
-
   <div class="header-right">
     <% if (locals.isLoggedIn) { %>
-      <a href="/dashboard" class="btn-secondary">Bảng điều khiển</a>
-      <a href="/project/list" class="btn-secondary">Dự án</a>
-      <a href="/task/create" class="btn-primary">+ Tạo công việc</a>
-      <button id="logoutBtn" class="btn-secondary">Đăng xuất</button>
+      <span class="user-chip">Xin chào, <%= locals.currentUser?.fullName || locals.currentUser?.email %></span>
+      <a href="/dashboard" class="btn-secondary">Dashboard</a>
+      <a href="/projects" class="btn-secondary">Projects</a>
+      <a href="/project/create" class="btn-secondary">New Project</a>
+      <a href="/task/create" class="btn-primary">New Task</a>
+      <button id="logoutBtn" class="btn-danger">Đăng xuất</button>
     <% } else { %>
       <a href="/login" class="btn-secondary">Đăng nhập</a>
       <a href="/register" class="btn-primary">Đăng ký</a>

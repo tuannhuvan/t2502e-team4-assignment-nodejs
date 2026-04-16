@@ -24,3 +24,33 @@ exports.showTaskEdit = async (req, res) => {
 exports.showProjectCreate = (req, res) => {
   res.render("project-create");
 };
+
+exports.showProjectList = async (req, res) => {
+  try {
+    const projectList = await projectService.getProjects();
+    res.render("project-list", { projectList });
+  } catch (error) {
+    console.error("Project list error:", error);
+    res.status(500).render("error", { message: "Không thể tải danh sách dự án" });
+  }
+};
+
+exports.showTaskDetail = async (req, res) => {
+  try {
+    const task = await taskService.getTaskById(req.params.taskId);
+    if (!task) return res.status(404).render("error", { message: "Task not found" });
+    res.render("task-detail", { task });
+  } catch (err) {
+    res.status(500).render("error", { message: err.message });
+  }
+};
+
+exports.showTaskDelete = async (req, res) => {
+  try {
+    const task = await taskService.getTaskById(req.params.taskId);
+    if (!task) return res.status(404).render("error", { message: "Task not found" });
+    res.render("task-delete", { task });
+  } catch (err) {
+    res.status(500).render("error", { message: err.message });
+  }
+};

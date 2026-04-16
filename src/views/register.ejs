@@ -5,10 +5,11 @@
       <input id="name" type="text" placeholder="Full Name" required>
       <input id="email" type="email" placeholder="Email" required>
       <input id="password" type="password" placeholder="Password" required>
-      <input id="confirmPassword" type="password" placeholder="Confirm Password" required> [cite: 63]
-      <p id="registerMessage"></p>
+      <input id="confirmPassword" type="password" placeholder="Confirm Password" required>
+      <p id="registerMessage" class="auth-message"></p>
       <button type="submit" class="auth-button">Register</button>
     </form>
+    <p class="auth-footer">Đã có tài khoản? <a href="/login">Đăng nhập</a></p>
   </div>
 </div>
 
@@ -20,13 +21,26 @@
       email: document.getElementById("email").value,
       password: document.getElementById("password").value,
       confirmPassword: document.getElementById("confirmPassword").value
-    }; [cite: 66]
-    if (formData.password !== formData.confirmPassword) return alert("Passwords do not match");
-    const res = await fetch("/api/auth/register", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formData)
-    }); [cite: 67, 68]
-    if (res.ok) window.location.href = "/login"; [cite: 69]
+    };
+    if (formData.password !== formData.confirmPassword) {
+      showToast("Mật khẩu không khớp", "error");
+      return;
+    }
+    try {
+      const res = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData)
+      });
+      if (res.ok) {
+        showToast("Đăng ký thành công", "success");
+        setTimeout(() => { window.location.href = "/login"; }, 700);
+      } else {
+        const data = await res.json();
+        showToast(data.message || "Đăng ký thất bại", "error");
+      }
+    } catch (err) {
+      showToast("Không thể kết nối máy chủ", "error");
+    }
   });
 </script>

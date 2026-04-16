@@ -1,67 +1,22 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TaskFlow | Quản lý dự án Kanban</title>
+  <title>TaskFlow - Giao diện Quản lý</title>
   <link rel="stylesheet" href="/styles/style.css">
-  <link rel="icon" href="/images/background.jpg">
-  <script src="/socket.io/socket.io.js"></script>
 </head>
 <body>
   <%- include("partials/header") %>
 
-  <main>
+  <main class="page">
     <%- body %>
   </main>
 
   <%- include("partials/footer") %>
 
   <div id="toastContainer" class="toast-container"></div>
-
-  <script>
-    // Hàm hiển thị thông báo Toast toàn cục
-    function showToast(message, type = "info") {
-      const container = document.getElementById("toastContainer");
-      const toast = document.createElement("div");
-      toast.className = `toast toast-${type}`;
-      toast.textContent = message;
-      container.appendChild(toast);
-
-      // Tự động xóa sau 3 giây
-      setTimeout(() => {
-        toast.classList.add("toast-hide");
-        setTimeout(() => toast.remove(), 300);
-      }, 3000);
-    }
-
-    // Hàm làm mới danh sách (được gọi từ socket-manager.js)
-    function refreshTaskList() {
-      // Có thể thực hiện fetch lại dữ liệu hoặc reload trang
-      console.log("Dữ liệu đã thay đổi, đang làm mới...");
-      location.reload();
-    }
-  </script>
-  
+  <script src="/js/app.js"></script>
   <script src="/js/socket-manager.js"></script>
-  <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      const logoutBtn = document.getElementById("logoutBtn");
-      if (logoutBtn) {
-        logoutBtn.addEventListener("click", async () => {
-          try {
-            await fetch("/api/auth/logout", {
-              method: "POST",
-              credentials: "include"
-            });
-            window.location.href = "/";
-          } catch (err) {
-            console.error("Lỗi đăng xuất:", err);
-            window.location.href = "/";
-          }
-        });
-      }
-    });
-  </script>
 </body>
 </html>

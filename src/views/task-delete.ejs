@@ -2,21 +2,31 @@
   <div class="delete-card">
     <h2>Delete Task</h2>
     <div class="delete-warning-box">
-      <h3>Are you sure you want to delete: <%= task.title %>?</h3> [cite: 86]
+      <h3>Bạn có chắc muốn xóa task: <strong><%= task.title %></strong>?</h3>
     </div>
     <div class="form-actions">
-      <a href="/task/<%= task._id %>" class="btn-secondary">Cancel</a>
-      <button type="button" class="btn-danger" id="confirmDeleteBtn">Confirm Delete</button>
+      <a href="/task/<%= task._id %>" class="btn-secondary">Hủy</a>
+      <button type="button" class="btn-danger" id="confirmDeleteBtn">Xóa</button>
     </div>
   </div>
 </div>
 
 <script>
   document.getElementById("confirmDeleteBtn").addEventListener("click", async () => {
-    const res = await fetch(`/api/tasks/${"<%= task._id %>"}`, {
-      method: "DELETE",
-      credentials: "include"
-    }); [cite: 88, 89]
-    if (res.ok) window.location.href = "/dashboard"; [cite: 90, 91]
+    try {
+      const res = await fetch(`/api/tasks/${"<%= task._id %>"}`, {
+        method: "DELETE",
+        credentials: "include"
+      });
+      if (res.ok) {
+        showToast("Xóa task thành công", "success");
+        window.location.href = "/dashboard";
+      } else {
+        const data = await res.json();
+        showToast(data.message || "Xóa thất bại", "error");
+      }
+    } catch (err) {
+      showToast("Không thể kết nối máy chủ", "error");
+    }
   });
 </script>

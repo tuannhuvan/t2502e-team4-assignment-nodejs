@@ -2,97 +2,87 @@
   const birth = new Date(dob);
   const today = new Date();
   let age = today.getFullYear() - birth.getFullYear();
-  const monthDiff = today.getMonth() - birth.getMonth();
-  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) { age--; }
-  return age; [cite: 1, 3]
+  if (new Date(today.getFullYear(), today.getMonth(), today.getDate()) < new Date(today.getFullYear(), birth.getMonth(), birth.getDate())) age--;
+  return age;
 } %>
 
 <div class="page">
-  <p class="page-subtitle"><%= landingMode ? "Welcome to TaskFlow. Log in or register to unlock your full dashboard experience." : "Project Dashboard + Kanban Board" %></p> [cite: 9]
-
   <% if (landingMode) { %>
-    <section class="landing-preview">
-      <div class="landing-card">
-        <h2>Discover TaskFlow</h2>
-        <div class="landing-features">
-          <div class="feature-item"><h3>Kanban board</h3><p>See progress across todo, in progress, and done.</p></div>
-          <div class="feature-item"><h3>Project overview</h3><p>Track active projects at a glance.</p></div> [cite: 11]
-        </div>
-        <div class="landing-actions">
-          <a href="/login" class="btn-primary">Login</a>
-          <a href="/register" class="btn-secondary">Register</a> [cite: 12]
-        </div>
+    <section class="hero-card">
+      <h2>Chào mừng đến TaskFlow</h2>
+      <p>Quản lý dự án, task và bình luận cho toàn đội với giao diện trực quan, kết nối API từ backend.</p>
+      <div class="hero-actions">
+        <a href="/login" class="btn-primary">Đăng nhập</a>
+        <a href="/register" class="btn-secondary">Đăng ký</a>
+      </div>
+    </section>
+  <% } else if (!currentProject) { %>
+    <section class="card">
+      <h2>Chưa có dự án nào</h2>
+      <p>Tạo dự án mới và bắt đầu quản lý công việc cho nhóm.</p>
+      <div class="hero-actions">
+        <a href="/project/create" class="btn-primary">Tạo dự án</a>
       </div>
     </section>
   <% } else { %>
-    <section class="project-overview">
-      <div class="project-info-card">
-        <% if (currentProject) { %>
-          <div class="project-main-info">
-            <div><p class="project-label">Current Project</p><h2><%= currentProject.name %></h2></div> [cite: 13]
-          </div>
-          <p><%= currentProject.description %></p>
-        <% } else { %>
-          <h2>No Project Selected</h2> [cite: 14]
-        <% } %>
+    <section class="dashboard-header">
+      <div>
+        <h2><%= currentProject.name %></h2>
+        <p><%= currentProject.description || 'Dự án đội nhóm của bạn' %></p>
+      </div>
+      <div class="dashboard-stats">
+        <div class="status-card">
+          <h3>Tổng task</h3>
+          <p><%= totalTasks %></p>
+        </div>
+        <div class="status-card">
+          <h3>Đang tiến hành</h3>
+          <p><%= inProgressTasks %></p>
+        </div>
+        <div class="status-card">
+          <h3>Đã hoàn thành</h3>
+          <p><%= doneTasks %></p>
+        </div>
+        <div class="status-card">
+          <h3>Quá hạn</h3>
+          <p><%= overdueTasks %></p>
+        </div>
       </div>
     </section>
 
-    <section class="stats">
-      <div class="stat-card"><h3>Total Tasks</h3><p><%= totalTasks %></p></div> [cite: 15]
-      <div class="stat-card"><h3>Overdue</h3><p><%= overdueTasks %></p></div>
-      <div class="stat-card"><h3>In Progress</h3><p><%= inProgressTasks %></p></div>
-      <div class="stat-card"><h3>Done</h3><p><%= doneTasks %></p></div> [cite: 16]
-    </section>
-
-    <section class="board">
+    <section class="kanban-board">
       <% ["todo", "in_progress", "done"].forEach(status => { %>
-        <div class="column drop-zone" data-status="<%= status %>" ondrop="dropTaskWithUpdate(event)" ondragover="event.preventDefault()">
-          <h2><%= status.replace('_', ' ').toUpperCase() %></h2>
+        <div class="drop-zone" data-status="<%= status %>" ondragover="event.preventDefault()" ondrop="dropTaskWithUpdate(event)">
+          <h2 class="status-title"><%= status === 'todo' ? 'To Do' : status === 'in_progress' ? 'In Progress' : 'Done' %></h2>
           <% activeTasks.filter(t => t.status === status).forEach(task => { %>
-            <div class="task-card" id="task-<%= task._id %>" draggable="true" ondragstart="dragTask(event)">
-              <h4><%= task.title %></h4>
-              <p><%= task.description %></p>
-              <a href="/task/<%= task._id %>">View detail</a> [cite: 17, 18]
+            <div class="task-card" id="task-<%= task._id %>" draggable="true" ondragstart="event.dataTransfer.setData('text/plain', event.target.id)">
+              <h4><a href="/task/<%= task._id %>"><%= task.title %></a></h4>
+              <p><strong>Người làm:</strong> <%= task.assigneeName %></p>
             </div>
           <% }) %>
         </div>
       <% }) %>
     </section>
-
-    <section class="team">
-      <h2>👥 Project Members</h2>
-      <div class="team-list">
-        <% currentProjectMembers.forEach(member => { %>
-          <div class="team-card <%= member.role === 'Owner' ? 'leader-card' : '' %>"> [cite: 25]
-            <h3><%= member.name %></h3>
-            <p>Age: <%= getAge(member.dob) %></p> [cite: 26]
-          </div>
-        <% }) %>
-      </div>
-    </section>
   <% } %>
 </div>
 
 <script>
-  function dragTask(event) { event.dataTransfer.setData("text/plain", event.currentTarget.id); } [cite: 5]
   async function dropTaskWithUpdate(event) {
     event.preventDefault();
     const taskId = event.dataTransfer.getData("text/plain");
     const taskCard = document.getElementById(taskId);
-    let dropZone = event.target.closest(".drop-zone"); [cite: 28]
+    let dropZone = event.target.closest(".drop-zone");
     if (!dropZone || !taskCard) return;
 
     const newStatus = dropZone.getAttribute("data-status");
     const taskIdNum = taskId.replace("task-", "");
-    try {
-      const response = await fetch(`/api/tasks/${taskIdNum}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status: newStatus }),
-        credentials: "include"
-      }); [cite: 30, 31]
-      if (response.ok) dropZone.appendChild(taskCard); [cite: 32]
-    } catch (error) { console.error("Update failed"); } [cite: 33]
+
+    const response = await fetch(`/api/tasks/${taskIdNum}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status: newStatus }),
+      credentials: "include"
+    });
+    if (response.ok) dropZone.appendChild(taskCard);
   }
 </script>

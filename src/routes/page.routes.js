@@ -5,6 +5,9 @@ const auth = require("../middleware/auth.middleware");
 // Route hiển thị trang tạo Task mới (Cần đổ dữ liệu Project và User vào Select box)
 router.get("/task/create", auth.ensureAuthenticated, pageController.showTaskCreate);
 
+// Route hiển thị trang danh sách Project
+router.get("/projects", auth.ensureAuthenticated, pageController.showProjectList);
+
 // Route hiển thị trang tạo Project mới
 router.get("/project/create", auth.ensureAuthenticated, pageController.showProjectCreate);
 
