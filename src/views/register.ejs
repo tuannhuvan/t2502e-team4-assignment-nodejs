@@ -1,3 +1,4 @@
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 <div class="auth-page">
   <div class="auth-card">
     <div class="auth-brand">
@@ -16,20 +17,29 @@
         <input id="email" name="email" type="email" placeholder="Enter your email" required>
       </div>
 
-      <div class="form-group">
+      <div class="form-group password-field-wrapper">
         <label for="password">Password</label>
-        <input id="password" name="password" type="password" placeholder="Create a password" required>
+        <div style="position: relative;"> <!-- Bao quanh để dễ căn chỉnh icon -->
+          <input id="password" name="password" type="password" placeholder="Enter your password" required>
+          <button type="button" class="password-toggle" data-target="password" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); border: none; background: none; cursor: pointer;">
+            <i class="fa-regular fa-eye" id="toggleIcon"></i>
+          </button>
+        </div>
       </div>
-
-      <div class="form-group">
+      <div class="form-group password-field-wrapper">
         <label for="confirmPassword">Confirm Password</label>
-        <input
-          id="confirmPassword"
-          name="confirmPassword"
-          type="password"
-          placeholder="Confirm your password"
-          required
-        >
+        <div style="position: relative;">
+          <input
+            id="confirmPassword"
+            name="confirmPassword"
+            type="password"
+            placeholder="Confirm your password"
+            required
+          >
+          <button type="button" class="password-toggle" data-target="confirmPassword" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); border: none; background: none; cursor: pointer;">
+            <i class="fa-regular fa-eye" id="toggleIconConfirm"></i>
+          </button>
+        </div>
       </div>
 
       <p id="registerMessage" class="form-message"></p>
@@ -47,23 +57,72 @@
 <script>
   const registerForm = document.getElementById("registerForm");
   const registerMessage = document.getElementById("registerMessage");
+  const emailInput = document.getElementById("email");
+  const passwordToggles = document.querySelectorAll(".password-toggle");
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  const setMessage = (text, type = "error") => {
+    registerMessage.textContent = text;
+    registerMessage.className = `form-message ${type === "success" ? "success-message" : "error-message"}`;
+  };
+
+  const validateEmail = () => {
+    const email = emailInput.value.trim();
+    if (!email) return "Email is required";
+    if (!emailRegex.test(email)) return "Please enter a valid email address";
+    return "";
+  };
+
+  emailInput.addEventListener("blur", () => {
+    const error = validateEmail();
+    if (error) setMessage(error, "error");
+  });
+
+  emailInput.addEventListener("input", () => {
+    const error = validateEmail();
+    if (!error) setMessage("", "success");
+  });
+
+  passwordToggles.forEach(button => {
+    button.addEventListener("click", () => {
+      const targetId = button.getAttribute("data-target");
+      const targetInput = document.getElementById(targetId);
+      if (targetInput.type === "password") {
+        targetInput.type = "text";
+        button.textContent = "Hide";
+      } else {
+        targetInput.type = "password";
+        button.textContent = "Show";
+      }
+    });
+  });
 
   registerForm.addEventListener("submit", async event => {
     event.preventDefault();
 
     const name = document.getElementById("name").value.trim();
-    const email = document.getElementById("email").value.trim();
+    const email = emailInput.value.trim().toLowerCase();
     const password = document.getElementById("password").value.trim();
     const confirmPassword = document.getElementById("confirmPassword").value.trim();
 
-    if (password !== confirmPassword) {
-      registerMessage.textContent = "Passwords do not match";
-      registerMessage.className = "form-message error-message";
+    const emailError = validateEmail();
+    if (emailError) {
+      setMessage(emailError, "error");
       return;
     }
 
-    registerMessage.textContent = "Processing...";
-    registerMessage.className = "form-message";
+    if (password !== confirmPassword) {
+      setMessage("Passwords do not match", "error");
+      return;
+    }
+
+    if (!registerForm.checkValidity()) {
+      registerForm.reportValidity();
+      return;
+    }
+
+    setMessage("Processing...", "success");
 
     try {
       const response = await fetch("/api/auth/register", {
@@ -77,21 +136,18 @@
       const data = await response.json();
 
       if (!response.ok) {
-        registerMessage.textContent = data.message || "Register failed";
-        registerMessage.className = "form-message error-message";
+        setMessage(data.message || "Register failed", "error");
         return;
       }
 
-      registerMessage.textContent = data.message || "Register successful";
-      registerMessage.className = "form-message success-message";
+      setMessage(data.message || "Register successful", "success");
       
       // Redirect to login page after successful registration
       setTimeout(() => {
         window.location.href = "/login";
       }, 1000);
     } catch (error) {
-      registerMessage.textContent = "Cannot connect to server";
-      registerMessage.className = "form-message error-message";
+      setMessage("Cannot connect to server", "error");
     }
   });
 </script>

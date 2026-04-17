@@ -43,8 +43,6 @@ function allowDrop(event) {
 }
 
 async function submitAddColumn(projectId, currentWorkflow) {
-    projectId = projectId || window.currentProjectId;
-    currentWorkflow = currentWorkflow || window.currentProjectWorkflow || [];
     const nameInput = document.getElementById('newColumnName');
     const label = nameInput.value.trim();
     

@@ -2,7 +2,6 @@
 
 
 <div class="page">
-  <p class="page-subtitle"><%= landingMode ? "Welcome to TaskFlow. Log in or register to unlock your full dashboard experience." : "Project Dashboard + Kanban Board" %></p>
 
   <% if (landingMode) { %>
     <section class="landing-preview">
@@ -32,6 +31,25 @@
       </div>
     </section>
   <% } else { %>
+    <div class="dashboard-topbar">
+      <div class="page-toolbar">
+        <div class="page-toolbar-left">
+          <h2>Project dashboard</h2>
+         
+        </div>
+        <% if (projects && projects.length > 0) { %>
+          <div class="project-switcher">
+            <label for="projectSelector">Current project</label>
+            <select id="projectSelector" onchange="changeProject(this.value)">
+              <option value="">Select project...</option>
+              <% projects.forEach(project => { %>
+                <option value="<%= project._id %>" <%= currentProject && currentProject._id?.toString() === project._id?.toString() ? "selected" : "" %>><%= project.name %></option>
+              <% }) %>
+            </select>
+          </div>
+        <% } %>
+      </div>
+    </div>
     <section class="project-overview">
       <div class="project-info-card">
         <% if (currentProject) { %>
@@ -80,19 +98,16 @@
     </div>
 
     <% 
-      var canDragTasks = false;
-      var currentUserPermission = 'view';
-      var currentUserIsOwner = false;
+      let canDragTasks = false;
       if (currentProjectMembers && userId) {
-        for (var i = 0; i < currentProjectMembers.length; i++) {
-          var member = currentProjectMembers[i];
-          var memberUserId = member.userId || (member.user && member.user._id);
-          if (memberUserId && memberUserId.toString() === userId.toString()) {
-            currentUserPermission = member.permission || 'view';
-            currentUserIsOwner = member.role === 'Owner';
-            canDragTasks = currentUserIsOwner || currentUserPermission === 'admin' || currentUserPermission === 'comment';
-            break;
-          }
+        const currentMember = currentProjectMembers.find(member => {
+          const memberUserId = member.userId || member.user?._id;
+          return memberUserId?.toString() === userId?.toString();
+        });
+        if (currentMember) {
+          const permissionValue = currentMember.permission || 'view';
+          const isOwner = currentMember.role === 'Owner';
+          canDragTasks = isOwner || permissionValue === 'admin' || permissionValue === 'comment';
         }
       }
     %>
@@ -105,10 +120,15 @@
             <div class="empty-column-message">No tasks yet.</div>
           <% } %>
           <% tasksInColumn.forEach(task => { %>
-            <div class="task-card" id="task-<%= task.id %>" draggable="true" ondragstart="window.dragTask(event)">
+            <div class="task-card" id="task-<%= task.id %>" <%= canDragTasks ? 'draggable="true"' : '' %> ondragstart="dragTask(event)">
               <div class="task-card-top">
                 <h4><%= task.title %></h4>
-                <span class="priority <%= task.priority.toLowerCase() %>"><%= task.priority %></span>
+                <%
+                  const priority = task.priority || 'low';
+                %>
+                <span class="priority <%= priority.toLowerCase() %>">
+                  <%= priority %>
+                </span>
               </div>
               <p class="task-description"><%= task.description %></p>
               <p>👤 <%= task.assigneeName %></p>
@@ -138,7 +158,7 @@
           <input type="text" id="newColumnName" placeholder="Column name (e.g. Testing)" class="form-control">
           <div class="modal-actions">
             <button type="button" onclick="closeAddColumnModal()">Cancel</button>
-            <button type="button" class="btn-primary" onclick="submitAddColumn(window.currentProjectId, window.currentProjectWorkflow)">
+            <button type="button" class="btn-primary" onclick="submitAddColumn()">
               Create column
             </button>
           </div>
@@ -146,6 +166,61 @@
       </div>
 
     <script>
+      const currentProjectWorkflow = <%- JSON.stringify(currentProject ? currentProject.workflow || [] : []) %>;
+
+      function openAddColumnModal() {
+        document.getElementById('newColumnName').value = '';
+        document.getElementById('addColumnModal').style.display = 'flex';
+      }
+
+      function closeAddColumnModal() {
+        document.getElementById('addColumnModal').style.display = 'none';
+      }
+
+      function slugifyLabel(label) {
+        return label.toLowerCase().trim().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '');
+      }
+
+      async function submitAddColumn() {
+        const nameInput = document.getElementById('newColumnName');
+        const label = nameInput.value.trim();
+        if (!label) {
+          return alert('Please enter a column name.');
+        }
+
+        const key = slugifyLabel(label);
+        if (!key) {
+          return alert('Column name must contain valid letters or numbers.');
+        }
+
+        const existingKeys = currentProjectWorkflow.map(item => item.key);
+        if (existingKeys.includes(key)) {
+          return alert('A column with this name already exists.');
+        }
+
+        const workflow = [...currentProjectWorkflow, { key, label }];
+
+        try {
+          const response = await fetch(`/api/projects/<%- currentProject ? currentProject._id : '' %>`, {
+            method: 'PUT',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ workflow })
+          });
+
+          if (response.ok) {
+            location.reload();
+          } else {
+            const errorData = await response.json();
+            console.error('Project update failed', errorData);
+            alert(errorData.message || 'Could not add column.');
+          }
+        } catch (error) {
+          console.error('Add column error', error);
+          alert('Could not add column.');
+        }
+      }
+
       function openProjectInviteModal() {
         const inviteEmailInput = document.getElementById('inviteEmail');
         inviteEmailInput.value = '';
@@ -157,6 +232,11 @@
 
       function closeProjectInviteModal() {
         document.getElementById('projectInviteModal').classList.add('hidden');
+      }
+
+      function changeProject(projectId) {
+        if (!projectId) return;
+        window.location.href = `/dashboard?projectId=${projectId}`;
       }
 
       async function submitProjectInvite(event) {
@@ -529,6 +609,26 @@
 </script>
 <script src="/js/socket-manager.js"></script>
 <script src="/js/board.js"></script>
+<script>
+  window.currentUserId = "<%= userId %>";
+  <% if (currentProjectMembers && userId) { %>
+    <% const currentMember = currentProjectMembers.find(member => {
+         const memberUserId = member.userId || member.user?._id;
+         return memberUserId?.toString() === userId?.toString();
+       });
+    %>
+    window.currentUserPermission = "<%= currentMember ? currentMember.permission || 'view' : 'view' %>";
+    window.currentUserIsOwner = <%= currentMember && currentMember.role === 'Owner' ? 'true' : 'false' %>;
+  <% } else { %>
+    window.currentUserPermission = 'view';
+    window.currentUserIsOwner = false;
+  <% } %>
+  <% if (currentProject) { %>
+    if (typeof window.joinProjectRoom === 'function') {
+      window.joinProjectRoom("<%- currentProject._id %>");
+    }
+  <% } %>
+</script>
 <div id="projectInviteModal" class="modal" style="display: none;">
   <div class="modal-content">
     <h3>Invite Member to Project</h3>
@@ -554,11 +654,9 @@
 </div>
 
 <script>
-  window.currentUserId = "<%= userId %>";
-  window.currentUserPermission = "<%= currentUserPermission %>";
-  window.currentUserIsOwner = <%= currentUserIsOwner ? 'true' : 'false' %>;
-  window.currentProjectId = "<%- currentProject ? currentProject._id : '' %>";
-  window.currentProjectWorkflow = <%- JSON.stringify(currentProject ? currentProject.workflow || [] : []) %>;
+  // Đảm bảo userId từ res.locals được đổ vào đây
+  window.currentUserId = "<%= userId %>"; 
+  
   <% if (currentProject) { %>
     window.currentProjectId = "<%- currentProject._id %>";
     if (window.joinProjectRoom) {

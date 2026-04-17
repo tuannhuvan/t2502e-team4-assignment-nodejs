@@ -1,21 +1,31 @@
-const socket = typeof io !== "undefined" ? io({
+var socket = window.socket || (typeof io !== "undefined" ? io({
   reconnection: true,
   reconnectionDelay: 1000,
   reconnectionDelayMax: 5000,
   reconnectionAttempts: 5
-}) : null;
+}) : null);
 
 window.socket = socket;
 window.joinProjectRoom = (projectId) => {
-  if (socket && projectId) {
-    socket.emit("join-project", projectId);
+  if (window.socket && projectId) {
+    window.socket.emit("join-project", projectId);
     console.log("Joined project room:", projectId);
+  }
+};
+
+window.joinUserRoom = (userId) => {
+  if (socket && userId) {
+    socket.emit("join-user", userId);
+    console.log("Joined user room:", userId);
   }
 };
 
 if (socket) {
   socket.on("connect", () => {
     console.log("Socket connected:", socket.id);
+    if (window.currentUserId) {
+      window.joinUserRoom(window.currentUserId);
+    }
   });
 
   // Listen for the ONLY event the backend sends
@@ -31,6 +41,8 @@ if (socket) {
           position: "right", // left, center or right
           backgroundColor: data.type === "success" ? "green" : data.type === "warning" ? "orange" : data.type === "error" ? "red" : "blue",
           stopOnFocus: true, // Ngừng đếm ngược khi di chuột vào
+          destination: data.link || undefined,
+          newWindow: true
         }).showToast();
       } else if (typeof showToast === "function") {
         showToast(data.message, data.type);
