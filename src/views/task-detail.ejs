@@ -17,9 +17,134 @@
       </div>
 
       <div class="detail-actions">
-        <a href="/task/<%= task._id %>/edit"   class="btn-primary">Edit Task</a>
+        <a href="/task/<%= task._id %>/edit" class="btn-primary">Edit Task</a>
         <a href="/task/<%= task._id %>/delete" class="btn-danger">Delete Task</a>
+        <button id="openInviteModal" class="btn-secondary">+ Add member</button>
+        <button id="openAttachmentModal" class="btn-secondary">+ Add attachment</button>
+        <button id="openTagModal" class="btn-secondary">+ Add tag</button>
         <a href="/dashboard" class="back-link">← Back to board</a>
+      </div>
+
+      <div class="task-meta-card task-detail-section">
+        <h3>Members</h3>
+        <div class="member-chips">
+          <% const acceptedMembers = (task.members || []).filter(member => member.status === 'accepted'); %>
+          <% if (acceptedMembers.length) { %>
+            <% acceptedMembers.forEach(member => { %>
+              <span class="member-chip"><%= member.user?.fullName || member.user?.email || 'Unknown' %></span>
+            <% }) %>
+          <% } else { %>
+            <p>No members assigned.</p>
+          <% } %>
+        </div>
+
+        <% const pendingInvites = (task.members || []).filter(member => member.status === 'pending'); %>
+        <% if (pendingInvites.length) { %>
+          <div class="pending-section">
+            <h4>Pending invitations</h4>
+            <ul class="pending-list">
+              <% pendingInvites.forEach(invite => { %>
+                <li><%= invite.user?.fullName || invite.user?.email || 'Pending user' %> — invited</li>
+              <% }) %>
+            </ul>
+          </div>
+        <% } %>
+
+        <% const myPending = (task.members || []).find(member => member.status === 'pending' && member.user?._id?.toString() === currentUserId?.toString()); %>
+        <% if (myPending) { %>
+          <button id="acceptInviteButton" class="btn-primary">Accept invitation</button>
+        <% } %>
+      </div>
+
+      <div class="task-meta-card task-detail-section">
+        <h3>Attachments</h3>
+        <% if (task.attachments && task.attachments.length) { %>
+          <ul class="attachment-list">
+            <% task.attachments.forEach(file => { %>
+              <li><a href="<%= file.fileUrl %>" target="_blank" rel="noopener"><%= file.fileName || file.fileUrl %></a></li>
+            <% }) %>
+          </ul>
+        <% } else { %>
+          <p>No attachments yet.</p>
+        <% } %>
+      </div>
+
+      <div class="task-meta-card task-detail-section">
+        <h3>Tags</h3>
+        <% if (task.tags && task.tags.length) { %>
+          <div class="tag-list">
+            <% task.tags.forEach(tag => { %>
+              <span><%= tag %></span>
+            <% }) %>
+          </div>
+        <% } else { %>
+          <p>No tags assigned.</p>
+        <% } %>
+      </div>
+
+      <div id="inviteModal" class="modal hidden">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h3>Add project member to task</h3>
+            <button class="modal-close" id="closeInviteModal">×</button>
+          </div>
+          <div class="modal-body">
+            <p>Only users who are already members of the project can be added to this task.</p>
+            <form id="inviteForm" class="attachment-form">
+              <label>Project member</label>
+              <select id="inviteUserId" required>
+                <option value="">Select project member</option>
+                <% const existingTaskUserIds = (task.members || []).map(member => member.user?._id?.toString() || member.user?.toString()); %>
+                <% const eligibleMembers = (projectMembers || []).filter(member => !existingTaskUserIds.includes(member.userId?.toString())); %>
+                <% if (eligibleMembers.length > 0) { %>
+                  <% eligibleMembers.forEach(member => { %>
+                    <option value="<%= member.userId %>"><%= member.fullName %> (<%= member.email %>)</option>
+                  <% }) %>
+                <% } else { %>
+                  <option value="" disabled>No eligible project members available</option>
+                <% } %>
+              </select>
+              <button type="submit" class="btn-primary" <%= eligibleMembers.length === 0 ? 'disabled' : '' %>>Send invitation</button>
+              <p id="inviteMessage" class="form-message"></p>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <div id="attachmentModal" class="modal hidden">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h3>Add attachment</h3>
+            <button class="modal-close" id="closeAttachmentModal">×</button>
+          </div>
+          <div class="modal-body">
+            <form id="attachmentForm" class="attachment-form">
+              <label>File name</label>
+              <input type="text" id="attachmentName" placeholder="Enter file name" required />
+              <label>File URL</label>
+              <input type="url" id="attachmentUrl" placeholder="https://example.com/file.pdf" required />
+              <button type="submit" class="btn-primary">Save attachment</button>
+              <p id="attachmentMessage" class="form-message"></p>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <div id="tagModal" class="modal hidden">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h3>Add tag</h3>
+            <button class="modal-close" id="closeTagModal">×</button>
+          </div>
+          <div class="modal-body">
+            <form id="tagForm" class="attachment-form">
+              <label>Tag name</label>
+              <input type="text" id="tagName" placeholder="e.g. bug, frontend" required />
+              <button type="submit" class="btn-primary">Add tag</button>
+              <p id="tagMessage" class="form-message"></p>
+            </form>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -92,6 +217,146 @@
     } catch (error) {
       commentMessage.textContent = "Cannot connect to server";
       commentMessage.className   = "form-message error-message";
+    }
+  });
+
+  const inviteModal = document.getElementById('inviteModal');
+  const attachmentModal = document.getElementById('attachmentModal');
+  const tagModal = document.getElementById('tagModal');
+
+  document.getElementById('openInviteModal').addEventListener('click', () => inviteModal.classList.remove('hidden'));
+  document.getElementById('closeInviteModal').addEventListener('click', () => inviteModal.classList.add('hidden'));
+  document.getElementById('openAttachmentModal').addEventListener('click', () => attachmentModal.classList.remove('hidden'));
+  document.getElementById('closeAttachmentModal').addEventListener('click', () => attachmentModal.classList.add('hidden'));
+  document.getElementById('openTagModal').addEventListener('click', () => tagModal.classList.remove('hidden'));
+  document.getElementById('closeTagModal').addEventListener('click', () => tagModal.classList.add('hidden'));
+
+  async function inviteUser(userId) {
+    try {
+      const response = await fetch(`/api/tasks/<%= task._id %>/invite`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId })
+      });
+
+      const data = await response.json();
+      const inviteMessage = document.getElementById('inviteMessage');
+
+      if (!response.ok) {
+        inviteMessage.textContent = data.message || 'Invite failed';
+        inviteMessage.className = 'form-message error-message';
+        return;
+      }
+
+      inviteMessage.textContent = 'Invitation sent. The user will receive a notification.';
+      inviteMessage.className = 'form-message success-message';
+      setTimeout(() => window.location.reload(), 800);
+    } catch (error) {
+      console.error('Invite error', error);
+      const inviteMessage = document.getElementById('inviteMessage');
+      inviteMessage.textContent = 'Cannot connect to server';
+      inviteMessage.className = 'form-message error-message';
+    }
+  }
+
+  document.getElementById('inviteForm').addEventListener('submit', async event => {
+    event.preventDefault();
+    const userId = document.getElementById('inviteUserId').value;
+    const inviteMessage = document.getElementById('inviteMessage');
+
+    if (!userId) {
+      inviteMessage.textContent = 'Please select a valid project member.';
+      inviteMessage.className = 'form-message error-message';
+      return;
+    }
+
+    inviteUser(userId);
+  });
+
+  async function acceptInvite() {
+    try {
+      const response = await fetch(`/api/tasks/<%= task._id %>/invite/accept`, {
+        method: 'PUT',
+        credentials: 'include'
+      });
+      if (response.ok) {
+        location.reload();
+      } else {
+        console.error('Accept invite failed');
+      }
+    } catch (error) {
+      console.error('Accept invite error', error);
+    }
+  }
+
+  const acceptButton = document.getElementById('acceptInviteButton');
+  if (acceptButton) {
+    acceptButton.addEventListener('click', acceptInvite);
+  }
+
+  document.getElementById('attachmentForm').addEventListener('submit', async event => {
+    event.preventDefault();
+    const message = document.getElementById('attachmentMessage');
+    const fileName = document.getElementById('attachmentName').value.trim();
+    const fileUrl = document.getElementById('attachmentUrl').value.trim();
+
+    message.textContent = 'Saving...';
+    message.className = 'form-message';
+
+    try {
+      const response = await fetch(`/api/tasks/<%= task._id %>/attachments`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ fileName, fileUrl })
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        message.textContent = data.message || 'Failed to save attachment';
+        message.className = 'form-message error-message';
+        return;
+      }
+
+      message.textContent = 'Attachment added!';
+      message.className = 'form-message success-message';
+      setTimeout(() => window.location.reload(), 600);
+    } catch (error) {
+      message.textContent = 'Cannot connect to server';
+      message.className = 'form-message error-message';
+    }
+  });
+
+  document.getElementById('tagForm').addEventListener('submit', async event => {
+    event.preventDefault();
+    const message = document.getElementById('tagMessage');
+    const tag = document.getElementById('tagName').value.trim();
+
+    message.textContent = 'Saving...';
+    message.className = 'form-message';
+
+    try {
+      const response = await fetch(`/api/tasks/<%= task._id %>/tags`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ tag })
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        message.textContent = data.message || 'Failed to save tag';
+        message.className = 'form-message error-message';
+        return;
+      }
+
+      message.textContent = 'Tag added!';
+      message.className = 'form-message success-message';
+      setTimeout(() => window.location.reload(), 600);
+    } catch (error) {
+      message.textContent = 'Cannot connect to server';
+      message.className = 'form-message error-message';
     }
   });
 </script>

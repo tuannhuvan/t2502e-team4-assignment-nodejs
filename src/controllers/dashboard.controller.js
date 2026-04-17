@@ -59,6 +59,8 @@ exports.showDashboard = async (req, res) => {
       status: member.status || "accepted"
     })) : [];
 
+    const projects = await projectService.getProjects(req.userId);
+
     const hasAcceptedAccess = !!currentProject && (
       currentProject.owner?.toString() === req.userId?.toString() ||
       currentUserProjectMember?.status === "accepted"
@@ -110,6 +112,7 @@ exports.showDashboard = async (req, res) => {
       canInviteProject,
       pendingInvites,
       notifications,
+      projects,
       totalTasks: activeTasks.length,
       overdueTasks: activeTasks.filter(task => {
         const deadline = task.deadline ? new Date(task.deadline) : null;
