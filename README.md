@@ -1,6 +1,7 @@
 🚀 TaskFlow – Mini Trello (NodeJS)
-📌 Giới thiệu
 
+📌 Giới thiệu
+link video : https://drive.google.com/file/d/1YXM_3ow2OZ5e2hfAgQQO6-9wAiRZYSMs/view?usp=drive_link
 TaskFlow là hệ thống quản lý nhiệm vụ theo phong cách Trello/Linear, cho phép cá nhân hoặc nhóm:
 
 Quản lý project

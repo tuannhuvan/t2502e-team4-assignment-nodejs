@@ -56,7 +56,7 @@
             <label for="assigneeId">Assignee</label>
             <select id="assigneeId" name="assigneeId" required>
               <% users.forEach(user => { %>
-                <option value="<%= user._id %>" <%= (task.assignee && user._id.toString() === (task.assignee._id || task.assignee).toString()) ? "selected" : "" %>>
+                <option value="<%= user._id %>" <%= user._id.toString() === String(task.assignee ? (task.assignee._id || task.assignee) : '') ? "selected" : "" %>>
                   <%= user.fullName %>
                 </option>
               <% }) %>

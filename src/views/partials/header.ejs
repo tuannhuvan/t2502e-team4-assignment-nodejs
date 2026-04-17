@@ -5,6 +5,12 @@
 
   <div class="header-right">
     <% if (isLoggedIn) { %>
+      <a href="/dashboard#pendingInvitesSection" class="btn-secondary header-notification">
+        🔔
+        <% if (typeof pendingInvitesCount !== 'undefined' && pendingInvitesCount > 0) { %>
+          <span class="notification-badge"><%= pendingInvitesCount %></span>
+        <% } %>
+      </a>
       <a href="/dashboard" class="btn-secondary">Dashboard</a>
       <a href="/project/create" class="btn-secondary">+ Create Project</a>
       <a href="/task/create" class="btn-primary">+ Create Task</a>

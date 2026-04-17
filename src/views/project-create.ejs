@@ -11,7 +11,7 @@
         <a href="/dashboard" class="back-link">← Back to dashboard</a>
       </div>
 
-      <form class="task-form" id="createProjectForm">
+      <form class="task-form" id="createProjectForm" action="/project/create" method="POST">
         <div class="form-grid">
           <div class="form-group form-group-full">
             <label for="name">Project Name</label>
@@ -24,7 +24,11 @@
           </div>
         </div>
 
-        <p id="projectMessage" class="form-message"></p>
+        <% if (errorMessage) { %>
+          <p id="projectMessage" class="form-message error-message"><%= errorMessage %></p>
+        <% } else { %>
+          <p id="projectMessage" class="form-message"></p>
+        <% } %>
 
         <div class="form-actions">
           <a href="/dashboard" class="btn-secondary">Cancel</a>
@@ -34,48 +38,3 @@
     </div>
   </section>
 </div>
-
-<script>
-  const createProjectForm = document.getElementById("createProjectForm");
-  const projectMessage = document.getElementById("projectMessage");
-
-  createProjectForm.addEventListener("submit", async event => {
-    event.preventDefault();
-
-    const formData = {
-      name: document.getElementById("name").value.trim(),
-      description: document.getElementById("description").value.trim()
-    };
-
-    projectMessage.textContent = "Processing...";
-    projectMessage.className = "form-message";
-
-    try {
-      const response = await fetch("/api/projects", {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(formData)
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        projectMessage.textContent = data.message || "Project creation failed";
-        projectMessage.className = "form-message error-message";
-        return;
-      }
-
-      projectMessage.textContent = data.message || "Project created successfully";
-      projectMessage.className = "form-message success-message";
-      setTimeout(() => {
-        window.location.href = "/dashboard";
-      }, 600);
-    } catch (error) {
-      projectMessage.textContent = "Cannot connect to server";
-      projectMessage.className = "form-message error-message";
-    }
-  });
-</script>

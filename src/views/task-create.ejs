@@ -22,7 +22,7 @@
             <label for="projectId">Project</label>
             <select id="projectId" name="projectId" required>
               <% projects.forEach(project => { %>
-                <option value="<%= project.id %>"><%= project.name %></option>
+                <option value="<%= project._id %>"><%= project.name %></option>
               <% }) %>
             </select>
           </div>
@@ -35,9 +35,6 @@
           <div class="form-group">
             <label for="status">Status</label>
             <select id="status" name="status" required>
-              <option value="todo">To Do</option>
-              <option value="in_progress">In Progress</option>
-              <option value="done">Done</option>
             </select>
           </div>
 
@@ -79,6 +76,23 @@
 <script>
   const createTaskForm = document.getElementById("createTaskForm");
   const taskMessage = document.getElementById("taskMessage");
+  const statusSelect = document.getElementById("status");
+  const projectSelect = document.getElementById("projectId");
+  const projectWorkflows = <%- JSON.stringify(projects.map(project => ({ id: project._id, workflow: project.workflow || [{ key: "todo", label: "To Do" }, { key: "in_progress", label: "In Progress" }, { key: "done", label: "Done" }] }))) %>;
+
+  const populateStatusOptions = (projectId) => {
+    const project = projectWorkflows.find(item => item.id === projectId);
+    const workflow = project ? project.workflow : [{ key: "todo", label: "To Do" }, { key: "in_progress", label: "In Progress" }, { key: "done", label: "Done" }];
+    statusSelect.innerHTML = workflow
+      .map(column => `<option value="${column.key}">${column.label}</option>`)
+      .join("");
+  };
+
+  projectSelect.addEventListener("change", event => {
+    populateStatusOptions(event.target.value);
+  });
+
+  populateStatusOptions(projectSelect.value);
 
   createTaskForm.addEventListener("submit", async event => {
     event.preventDefault();
@@ -116,9 +130,20 @@
 
       taskMessage.textContent = data.message || "Task created successfully";
       taskMessage.className = "form-message success-message";
+      setTimeout(() => {
+        window.location.href = "/dashboard";
+      }, 600);
     } catch (error) {
       taskMessage.textContent = "Cannot connect to server";
       taskMessage.className = "form-message error-message";
     }
   });
+
+  const queryStatus = new URLSearchParams(window.location.search).get('status');
+  if (queryStatus) {
+    const statusSelect = document.getElementById('status');
+    if (statusSelect && statusSelect.querySelector(`option[value="${queryStatus}"]`)) {
+      statusSelect.value = queryStatus;
+    }
+  }
 </script>

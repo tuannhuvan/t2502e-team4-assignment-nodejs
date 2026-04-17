@@ -14,7 +14,17 @@ exports.showTaskCreate = async (req, res) => {
 };
 
 exports.showProjectCreate = (req, res) => {
-  res.render("project-create");
+  res.render("project-create", { errorMessage: null });
+};
+
+exports.createProject = async (req, res) => {
+  try {
+    await projectService.createProject(req.body, req.userId);
+    return res.redirect("/dashboard");
+  } catch (error) {
+    console.error("Project create page error:", error);
+    return res.render("project-create", { errorMessage: error.message || "Unable to create project" });
+  }
 };
 
 exports.showTaskDetail = async (req, res) => {
