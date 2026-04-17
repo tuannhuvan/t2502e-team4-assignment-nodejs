@@ -4,7 +4,6 @@ const cookieParser = require("cookie-parser");
 const path = require("path");
 const expressLayouts = require("express-ejs-layouts");
 const jwt = require("jsonwebtoken");
-const auth = require("./middleware/auth.middleware");
 require("dotenv").config();
 
 const app = express();
@@ -17,6 +16,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use((req, res, next) => {
   const token = req.cookies?.accessToken;
+  res.locals.isLoggedIn = false;
+  res.locals.userId = null;
+
   if (token) {
     try {
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
@@ -24,9 +26,8 @@ app.use((req, res, next) => {
       res.locals.userId = decoded.userId;
     } catch (err) {
       res.locals.isLoggedIn = false;
+      res.locals.userId = null;
     }
-  } else {
-    res.locals.isLoggedIn = false;
   }
   next();
 });

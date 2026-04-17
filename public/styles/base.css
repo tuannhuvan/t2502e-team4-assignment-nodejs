@@ -60,6 +60,30 @@ body {
   align-items: center;
 }
 
+.header-notification {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.notification-badge {
+  position: absolute;
+  top: -6px;
+  right: -8px;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 9999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #ef4444;
+  color: white;
+  font-size: 12px;
+  padding: 0 5px;
+  line-height: 1;
+}
+
 .page-subtitle {
   margin: 0 0 28px;
   font-size: 18px;

@@ -2,7 +2,14 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 
 const schema = new mongoose.Schema({
-  email: { type: String, required: true, unique: true },
+  email: { 
+    type: String, 
+    required: true, 
+    unique: true, 
+    lowercase: true, 
+    trim: true, 
+    match: [/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, 'Please enter a valid email'] 
+  },
   password: { type: String, required: true, select: false },
   fullName: String,
   dob: Date,
@@ -14,10 +21,7 @@ const schema = new mongoose.Schema({
 
 // Hash password before saving
 schema.pre("save", async function() {
-  // Only hash the password if it has been modified (or is new)
   if (!this.isModified("password")) return;
-
-  // Hash password with cost of 12
   const hashedPassword = await bcrypt.hash(this.password, 12);
   this.password = hashedPassword;
 });

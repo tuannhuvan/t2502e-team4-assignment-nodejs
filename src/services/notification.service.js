@@ -9,7 +9,7 @@ exports.getNotifications = async () => {
 };
 
 exports.getByUser = async (userId) => {
-  return await Notification.find({ user: userId });
+  return await Notification.find({ recipient: userId }).populate("sender", "fullName email");
 };
 
 exports.markAsRead = async (id) => {

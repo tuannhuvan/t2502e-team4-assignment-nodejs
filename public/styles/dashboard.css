@@ -2,17 +2,23 @@
   display: flex;
   gap: 20px;
   align-items: flex-start;
+  overflow-x: auto;
+  padding-bottom: 10px;
 }
 
 .column {
-  flex: 1;
+  flex: 0 0 300px;
+  min-width: 300px;
+  max-width: 320px;
   padding: 18px;
-  background: rgba(249, 250, 251, 0.96);
-  transition: all 0.25s ease;
+  background: #f5f7fb;
+  border-radius: 18px;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
 .column:hover {
-  box-shadow: 0 16px 30px rgba(15, 23, 42, 0.08);
+  transform: translateY(-2px);
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.12);
 }
 
 .task-link {
@@ -23,9 +29,13 @@
 
 .task-card {
   padding: 18px;
-  margin-bottom: 14px;
+  margin-bottom: 16px;
+  background: #ffffff;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 18px;
   transition: all 0.25s ease;
-  cursor: pointer;
+  cursor: grab;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
 }
 
 .task-link:hover .task-card {
@@ -187,19 +197,338 @@
   box-shadow: 0 12px 24px rgba(249, 115, 22, 0.22);
 }
 
+  .member-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+  }
+
+  .member-chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 12px;
+    border-radius: 999px;
+    background: #eef2ff;
+    color: #3730a3;
+    font-size: 14px;
+    border: 1px solid #c7d2fe;
+  }
+
+  .pending-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .pending-list li {
+    margin-bottom: 8px;
+    color: #52525b;
+  }
+
+  .task-detail-section {
+    margin-top: 20px;
+  }
+
+  .attachment-list,
+  .invite-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .attachment-list li,
+  .invite-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid #e5e7eb;
+  }
+
+  .invite-item span {
+    color: #1f2937;
+  }
+
+  .task-detail-card .detail-actions {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .btn-small {
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+
+  .modal {
+    position: fixed;
+    inset: 0;
+    z-index: 999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(15, 23, 42, 0.55);
+    padding: 20px;
+  }
+
+  .modal.hidden {
+    display: none;
+  }
+
+  .modal-content {
+    width: min(560px, 100%);
+    background: #ffffff;
+    border-radius: 22px;
+    box-shadow: 0 20px 60px rgba(15, 23, 42, 0.18);
+    overflow: hidden;
+  }
+
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 24px;
+    border-bottom: 1px solid #e5e7eb;
+  }
+
+  .modal-header h3 {
+    margin: 0;
+    font-size: 20px;
+    color: #111827;
+  }
+
+  .modal-close {
+    border: none;
+    background: transparent;
+    font-size: 24px;
+    cursor: pointer;
+    color: #6b7280;
+  }
+
+  .modal-body {
+    padding: 20px 24px 24px;
+  }
+
+  .attachment-form label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 700;
+    color: #374151;
+  }
+
+  .attachment-form input {
+    width: 100%;
+    padding: 12px 14px;
+    margin-bottom: 16px;
+    border: 1px solid #d1d5db;
+    border-radius: 14px;
+  }
+
+  .empty-state {
+    color: #6b7280;
+    padding: 14px 0;
+  }
+
+  .board-toolbar {
+    margin-bottom: 18px;
+  }
+
+  .quick-create-card {
+    padding: 12px;
+    border: 1px dashed rgba(15, 23, 42, 0.18);
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 16px;
+  }
+
+  .quick-add-button {
+    width: 100%;
+    padding: 12px 14px;
+    border: none;
+    border-radius: 14px;
+    background: #e0f2fe;
+    color: #0369a1;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.25s ease;
+  }
+
+  .quick-add-button:hover {
+    background: #bae6fd;
+  }
+
+  .add-column-card {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 220px;
+    background: #eff6ff;
+    border: 2px dashed rgba(59, 130, 246, 0.35);
+  }
+
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(15, 23, 42, 0.55);
+    padding: 20px;
+  }
+
+  .modal-card {
+    width: min(500px, 100%);
+    background: #ffffff;
+    border-radius: 22px;
+    padding: 28px;
+    box-shadow: 0 30px 60px rgba(15, 23, 42, 0.2);
+  }
+
+  .modal-card h3 {
+    margin-top: 0;
+    margin-bottom: 16px;
+    font-size: 22px;
+    color: #111827;
+  }
+
+  .modal-card input {
+    width: 100%;
+    padding: 14px 16px;
+    border: 1px solid #d1d5db;
+    border-radius: 14px;
+    margin-bottom: 22px;
+    font-size: 15px;
+    color: #111827;
+  }
+
+  .modal-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+  }
+
+  .empty-column-message {
+    margin: 12px 0;
+    padding: 16px;
+    border-radius: 16px;
+    background: #f8fafc;
+    color: #6b7280;
+    text-align: center;
+  }
+
+  .task-detail-card {
+    background: #ffffff;
+  }
+
+  .task-detail-card .detail-info p {
+    margin-bottom: 14px;
+  }
+
+  .tag-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+  }
+
+  .tag-list::before {
+    content: "";
+  }
+
+  .tag-list span {
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 12px;
+    border-radius: 999px;
+    background: #f3f4f6;
+    color: #111827;
+    border: 1px solid #e5e7eb;
+  }
+
+  .task-meta-card h3 {
+    margin-bottom: 14px;
+  }
+
+  .invite-list .invite-item button {
+    flex-shrink: 0;
+  }
+
+  .attachment-list a {
+    color: #1d4ed8;
+    text-decoration: none;
+  }
+
+  .attachment-list a:hover {
+    text-decoration: underline;
+  }
+
+  .task-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 18px 36px rgba(15, 23, 42, 0.14);
+  }
+
+  .column h2 {
+    margin-top: 0;
+    margin-bottom: 18px;
+    font-size: 20px;
+  }
+
+  .task-card p {
+    margin: 0 0 10px;
+    color: #4b5563;
+    line-height: 1.45;
+  }
+
+  .task-card .task-description {
+    min-height: 40px;
+  }
+
+  .task-detail-card .detail-actions .btn-secondary,
+  .task-detail-card .detail-actions .btn-primary,
+  .task-detail-card .detail-actions .btn-danger {
+    margin-bottom: 6px;
+  }
+
+  .task-meta-card {
+    padding: 22px;
+  }
+
+  .task-meta-card p {
+    margin: 0;
+    color: #475569;
+    line-height: 1.6;
+  }
+
+  .task-meta-card h4 {
+    margin: 0 0 12px;
+    font-size: 16px;
+  }
+
+  .modal-body p {
+    margin-top: 0;
+    margin-bottom: 18px;
+    color: #4b5563;
+  }
+
+  .detail-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .task-detail-section:not(:last-child) {
+    margin-bottom: 0;
+  }
+
+@media (max-width: 1200px) {
+  .board,
+  .detail-layout {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+}
+
 .project-overview {
-  margin-bottom: 28px;
-}
-
-.project-summary-card {
-  background: rgba(255, 255, 255, 0.96);
-  border: 1px solid #e5e7eb;
-  border-radius: 22px;
-  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
-  padding: 24px;
-}
-
-.project-summary-top {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
@@ -319,6 +648,96 @@
 .project-list-actions {
   display: flex;
   justify-content: flex-end;
+}
+
+.team-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.team-header-row h2 {
+  margin: 0;
+}
+
+.team-header-row .btn-secondary {
+  white-space: nowrap;
+}
+
+.pending-invites,
+.invite-card {
+  margin-bottom: 24px;
+}
+
+.pending-invite-list {
+  display: grid;
+  gap: 16px;
+}
+
+.invite-card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 18px;
+  padding: 20px;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.05);
+}
+
+.invite-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 12px;
+}
+
+.invite-status {
+  padding: 6px 10px;
+  border-radius: 9999px;
+  background: #fef3c7;
+  color: #92400e;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.notification-meta {
+  margin: 0;
+  color: #6b7280;
+  font-size: 13px;
+}
+
+.notification-from {
+  margin-top: 10px;
+  color: #374151;
+  font-size: 14px;
+}
+
+.invite-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.invite-actions .btn-primary,
+.invite-actions .btn-secondary {
+  min-width: 120px;
+}
+
+.modal-card label,
+.modal-card select {
+  display: block;
+  width: 100%;
+  margin-bottom: 12px;
+}
+
+.modal-card select {
+  padding: 12px 14px;
+  border: 1px solid #d1d5db;
+  border-radius: 14px;
+  font-size: 15px;
+  background: #fff;
 }
 
 .column:nth-child(1) {

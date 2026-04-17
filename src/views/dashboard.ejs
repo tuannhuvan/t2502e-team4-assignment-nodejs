@@ -1,32 +1,5 @@
 <% function getAge(dob) { const birth = new Date(dob); const today = new Date(); let age = today.getFullYear() - birth.getFullYear(); const monthDiff = today.getMonth() - birth.getMonth(); const dayDiff = today.getDate() - birth.getDate(); if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) { age--; } return age; } %>
 
-<script>
-  function allowDrop(event) {
-    event.preventDefault();
-  }
-
-  function dragTask(event) {
-    event.dataTransfer.setData("text/plain", event.currentTarget.id);
-  }
-
-  function dropTask(event) {
-    event.preventDefault();
-
-    const taskId = event.dataTransfer.getData("text/plain");
-    const taskCard = document.getElementById(taskId);
-
-    let dropZone = event.target;
-    while (dropZone && !dropZone.classList.contains("drop-zone")) {
-      dropZone = dropZone.parentElement;
-    }
-
-    if (!dropZone || !taskCard) {
-      return;
-    }
-
-    dropZone.appendChild(taskCard);
-  }
-</script>
 
 <div class="page">
   <p class="page-subtitle"><%= landingMode ? "Welcome to TaskFlow. Log in or register to unlock your full dashboard experience." : "Project Dashboard + Kanban Board" %></p>
@@ -106,64 +79,238 @@
       </div>
     </div>
 
+    <% 
+      var canDragTasks = false;
+      var currentUserPermission = 'view';
+      var currentUserIsOwner = false;
+      if (currentProjectMembers && userId) {
+        for (var i = 0; i < currentProjectMembers.length; i++) {
+          var member = currentProjectMembers[i];
+          var memberUserId = member.userId || (member.user && member.user._id);
+          if (memberUserId && memberUserId.toString() === userId.toString()) {
+            currentUserPermission = member.permission || 'view';
+            currentUserIsOwner = member.role === 'Owner';
+            canDragTasks = currentUserIsOwner || currentUserPermission === 'admin' || currentUserPermission === 'comment';
+            break;
+          }
+        }
+      }
+    %>
     <section class="board">
-      <div class="column drop-zone" data-status="todo" ondrop="dropTaskWithUpdate(event)" ondragover="allowDrop(event)">
-        <h2>To Do</h2>
-        <% activeTasks.filter(task => task.status === "todo").forEach(task => { %>
-          <div class="task-card" id="task-<%= task.id %>" draggable="true" ondragstart="dragTask(event)">
-            <div class="task-card-top">
-              <h4><%= task.title %></h4>
-              <span class="priority <%= task.priority.toLowerCase() %>"><%= task.priority %></span>
+      <% statusCategories.forEach(status => { %>
+        <div class="column drop-zone" data-status="<%= status.key %>" ondrop="dropTaskWithUpdate(event)" ondragover="allowDrop(event)">
+          <h2><%= status.label %></h2>
+          <% const tasksInColumn = activeTasks.filter(task => task.status === status.key); %>
+          <% if (tasksInColumn.length === 0) { %>
+            <div class="empty-column-message">No tasks yet.</div>
+          <% } %>
+          <% tasksInColumn.forEach(task => { %>
+            <div class="task-card" id="task-<%= task.id %>" draggable="true" ondragstart="window.dragTask(event)">
+              <div class="task-card-top">
+                <h4><%= task.title %></h4>
+                <span class="priority <%= task.priority.toLowerCase() %>"><%= task.priority %></span>
+              </div>
+              <p class="task-description"><%= task.description %></p>
+              <p>👤 <%= task.assigneeName %></p>
+              <p>📅 <%= task.deadline %></p>
+              <p>🧩 Project ID: <%= task.projectId %></p>
+              <p>🕒 Updated: <%= task.updatedAt %></p>
+              <a href="/task/<%= task.id %>" class="task-detail-link">View detail</a>
             </div>
-            <p class="task-description"><%= task.description %></p>
-            <p>👤 <%= task.assigneeName %></p>
-            <p>📅 <%= task.deadline %></p>
-            <p>🧩 Project ID: <%= task.projectId %></p>
-            <p>🕒 Updated: <%= task.updatedAt %></p>
-            <a href="/task/<%= task.id %>" class="task-detail-link">View detail</a>
+          <% }) %>
+          <% if (currentProject) { %>
+            <div class="quick-create-card">
+              <button class="quick-add-button" type="button" onclick="createQuickTask('<%= status.key %>')">+ Add card</button>
+            </div>
+          <% } %>
+        </div>
+      <% }) %>
+      <% if (currentProject) { %>
+        <div class="column add-column-card">
+          <button class="quick-add-button" type="button" onclick="openAddColumnModal()">+ Add list</button>
+        </div>
+      <% } %>
+    </section>
+
+      <div id="addColumnModal" class="modal" style="display: none;">
+        <div class="modal-content">
+          <h3>Add New Column</h3>
+          <input type="text" id="newColumnName" placeholder="Column name (e.g. Testing)" class="form-control">
+          <div class="modal-actions">
+            <button type="button" onclick="closeAddColumnModal()">Cancel</button>
+            <button type="button" class="btn-primary" onclick="submitAddColumn(window.currentProjectId, window.currentProjectWorkflow)">
+              Create column
+            </button>
           </div>
-        <% }) %>
+        </div>
       </div>
 
-      <div class="column drop-zone" data-status="in_progress" ondrop="dropTaskWithUpdate(event)" ondragover="allowDrop(event)">
-        <h2>In Progress</h2>
-        <% activeTasks.filter(task => task.status === "in_progress").forEach(task => { %>
-          <div class="task-card" id="task-<%= task.id %>" draggable="true" ondragstart="dragTask(event)">
-            <div class="task-card-top">
-              <h4><%= task.title %></h4>
-              <span class="priority <%= task.priority.toLowerCase() %>"><%= task.priority %></span>
-            </div>
-            <p class="task-description"><%= task.description %></p>
-            <p>👤 <%= task.assigneeName %></p>
-            <p>📅 <%= task.deadline %></p>
-            <p>🧩 Project ID: <%= task.projectId %></p>
-            <p>🕒 Updated: <%= task.updatedAt %></p>
-            <a href="/task/<%= task.id %>" class="task-detail-link">View detail</a>
-          </div>
-        <% }) %>
-      </div>
+    <script>
+      function openProjectInviteModal() {
+        const inviteEmailInput = document.getElementById('inviteEmail');
+        inviteEmailInput.value = '';
+        document.getElementById('invitePermission').value = 'comment';
+        document.getElementById('projectInviteMessage').textContent = '';
+        document.getElementById('projectInviteModal').classList.remove('hidden');
+        inviteEmailInput.focus();
+      }
 
-      <div class="column drop-zone" data-status="done" ondrop="dropTaskWithUpdate(event)" ondragover="allowDrop(event)">
-        <h2>Done</h2>
-        <% activeTasks.filter(task => task.status === "done").forEach(task => { %>
-          <div class="task-card" id="task-<%= task.id %>" draggable="true" ondragstart="dragTask(event)">
-            <div class="task-card-top">
-              <h4><%= task.title %></h4>
-              <span class="priority <%= task.priority.toLowerCase() %>"><%= task.priority %></span>
+      function closeProjectInviteModal() {
+        document.getElementById('projectInviteModal').classList.add('hidden');
+      }
+
+      async function submitProjectInvite(event) {
+        if (event) event.preventDefault();
+
+        const email = document.getElementById('inviteEmail').value.trim();
+        const permission = document.getElementById('invitePermission').value;
+        const inviteMessage = document.getElementById('projectInviteMessage');
+
+        if (!email) {
+          inviteMessage.textContent = 'Please enter an email address.';
+          inviteMessage.className = 'form-message error-message';
+          return;
+        }
+
+        try {
+          const response = await fetch(`/api/projects/<%- currentProject ? currentProject._id : '' %>/invite`, {
+            method: 'POST',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, permission })
+          });
+
+          const data = await response.json();
+          if (!response.ok) {
+            inviteMessage.textContent = data.message || 'Could not send invitation.';
+            inviteMessage.className = 'form-message error-message';
+            return;
+          }
+
+          inviteMessage.textContent = 'Invitation sent successfully.';
+          inviteMessage.className = 'form-message success-message';
+          setTimeout(() => window.location.reload(), 800);
+        } catch (error) {
+          console.error('Project invite error', error);
+          inviteMessage.textContent = 'Cannot connect to server.';
+          inviteMessage.className = 'form-message error-message';
+        }
+      }
+
+      document.addEventListener('DOMContentLoaded', () => {
+        const inviteButton = document.getElementById('openProjectInviteModal');
+        if (inviteButton) {
+          inviteButton.addEventListener('click', openProjectInviteModal);
+        }
+
+        const closeButton = document.getElementById('closeProjectInviteModal');
+        if (closeButton) {
+          closeButton.addEventListener('click', closeProjectInviteModal);
+        }
+
+        const cancelButton = document.getElementById('cancelProjectInviteModal');
+        if (cancelButton) {
+          cancelButton.addEventListener('click', closeProjectInviteModal);
+        }
+
+        const inviteForm = document.getElementById('projectInviteForm');
+        if (inviteForm) {
+          inviteForm.addEventListener('submit', submitProjectInvite);
+        }
+
+        document.querySelectorAll('.accept-project-invite-notification').forEach(button => {
+          button.addEventListener('click', event => {
+            const link = event.currentTarget.dataset.link;
+            acceptProjectInviteFromNotification(link);
+          });
+        });
+
+        document.querySelectorAll('.reject-project-invite-notification').forEach(button => {
+          button.addEventListener('click', event => {
+            const link = event.currentTarget.dataset.link;
+            rejectProjectInviteFromNotification(link);
+          });
+        });
+      });
+    </script>
+
+    <% if (pendingInvites && pendingInvites.length > 0) { %>
+      <section id="pendingInvitesSection" class="pending-invites">
+        <div class="team-header-row">
+          <h2>🔔 Pending Invitations</h2>
+        </div>
+        <div class="pending-invite-list">
+          <% pendingInvites.forEach(project => {
+            const pendingInvite = (project.members || []).find(member => member.user?._id?.toString() === userId?.toString() && member.status === 'pending');
+          %>
+            <div class="invite-card">
+              <div class="invite-card-header">
+                <h3><%= project.name %></h3>
+                <span class="invite-status">Pending</span>
+              </div>
+              <p><%= project.description || 'No project description provided.' %></p>
+              <% if (pendingInvite) { %>
+                <p><strong>Role:</strong> <%= pendingInvite.role %></p>
+                <p><strong>Permission:</strong> <%= pendingInvite.permission %></p>
+              <% } %>
+              <div class="invite-actions">
+                <button class="btn-primary" type="button" onclick="acceptProjectInvite('<%- project._id %>')">Accept</button>
+                <button class="btn-secondary" type="button" onclick="rejectProjectInvite('<%- project._id %>')">Decline</button>
+              </div>
             </div>
-            <p class="task-description"><%= task.description %></p>
-            <p>👤 <%= task.assigneeName %></p>
-            <p>📅 <%= task.deadline %></p>
-            <p>🧩 Project ID: <%= task.projectId %></p>
-            <p>🕒 Updated: <%= task.updatedAt %></p>
-            <a href="/task/<%= task.id %>" class="task-detail-link">View detail</a>
+          <% }) %>
+        </div>
+      </section>
+    <% } %>
+
+    <section class="notifications">
+      <div class="team-header-row">
+        <h2>📬 Notifications</h2>
+      </div>
+      <% const sortedNotifications = (notifications || []).slice().sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)); %>
+      <div class="pending-invite-list">
+        <% if (sortedNotifications.length > 0) { %>
+          <% sortedNotifications.forEach(notification => { %>
+            <div class="invite-card">
+              <div class="invite-card-header">
+                <div>
+                  <h3><%= notification.type === 'project_invite' ? 'Project Invite' : notification.type === 'task_invite' ? 'Task Invite' : notification.type.replace(/_/g, ' ') %></h3>
+                  <p class="notification-meta"><%= new Date(notification.createdAt).toLocaleString() %> · <%= notification.isRead ? 'Read' : 'Unread' %></p>
+                </div>
+                <% if (!notification.isRead) { %>
+                  <span class="invite-status">New</span>
+                <% } %>
+              </div>
+              <p><%= notification.content %></p>
+              <% if (notification.sender) { %>
+                <p class="notification-from">From: <%= notification.sender.fullName || notification.sender.email %></p>
+              <% } %>
+              <% if (notification.link) { %>
+                <div class="invite-actions">
+                  <a href="<%= notification.link %>" class="btn-primary">Open</a>
+                  <% if (notification.type === 'project_invite') { %>
+                    <button class="btn-primary accept-project-invite-notification" type="button" data-link="<%= notification.link %>">Accept</button>
+                    <button class="btn-secondary reject-project-invite-notification" type="button" data-link="<%= notification.link %>">Decline</button>
+                  <% } %>
+                </div>
+              <% } %>
+            </div>
+          <% }) %>
+        <% } else { %>
+          <div class="invite-card">
+            <p>No notifications yet.</p>
           </div>
-        <% }) %>
+        <% } %>
       </div>
     </section>
 
     <section class="team">
-      <h2>👥 Project Members</h2>
+      <div class="team-header-row">
+        <h2>👥 Project Members</h2>
+        <% if (canInviteProject) { %>
+          <button id="openProjectInviteModal" type="button" class="btn-secondary">+ Invite member</button>
+        <% } %>
+      </div>
       <div class="team-list">
         <% if (currentProjectMembers && currentProjectMembers.length > 0) { %>
           <% currentProjectMembers.forEach(member => { %>
@@ -173,10 +320,15 @@
                 <h3><%= member.name %></h3>
               </div>
               <p><strong>Project Role:</strong> <%= member.role %></p>
+              <p><strong>Permission:</strong> <%= member.permission %></p>
+              <p><strong>Status:</strong> <%= member.status %></p>
               <p><strong>GitHub:</strong> <%= member.github %></p>
               <p><strong>DOB:</strong> <%= member.dob %></p>
               <p><strong>Age:</strong> <%= getAge(member.dob) %></p>
               <p><strong>User ID:</strong> <%= member.userId %></p>
+              <% if (member.status === 'pending' && canInviteProject) { %>
+                <button class="btn-secondary" type="button" onclick="cancelProjectInvite('<%- currentProject._id %>', '<%= member.userId %>')">Cancel invite</button>
+              <% } %>
             </div>
           <% }) %>
         <% } else { %>
@@ -184,6 +336,35 @@
         <% } %>
       </div>
     </section>
+
+    <% if (canInviteProject) { %>
+      <div id="projectInviteModal" class="modal hidden">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h3>Invite a new member</h3>
+            <button id="closeProjectInviteModal" class="modal-close" type="button">×</button>
+          </div>
+          <div class="modal-body">
+            <p>Invite someone to this project and assign their permission level.</p>
+            <form id="projectInviteForm" class="attachment-form">
+              <label for="inviteEmail">Invitee email</label>
+              <input id="inviteEmail" type="email" placeholder="Invitee email" required />
+              <label for="invitePermission">Permission</label>
+              <select id="invitePermission">
+                <option value="admin">Admin (create/edit tasks, manage workflow)</option>
+                <option value="comment">Comment (view and comment)</option>
+                <option value="view">View only</option>
+              </select>
+              <div class="modal-actions">
+                <button id="cancelProjectInviteModal" class="btn-secondary" type="button">Cancel</button>
+                <button class="btn-primary" type="submit">Send invite</button>
+              </div>
+            </form>
+            <p id="projectInviteMessage" class="form-message"></p>
+          </div>
+        </div>
+      </div>
+    <% } %>
   <% } %>
 </div>
 
@@ -201,8 +382,6 @@
     const newStatus = dropZone.getAttribute("data-status");
     const taskIdNum = taskId.replace("task-", "");
 
-    console.log("Updating task", taskIdNum, "to status", newStatus);
-
     try {
       const response = await fetch("/api/tasks/" + taskIdNum, {
         method: "PUT",
@@ -210,10 +389,9 @@
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status: newStatus })
       });
-      console.log("Fetch response status:", response.status);
+
       if (response.ok) {
         dropZone.appendChild(taskCard);
-        console.log("Task updated successfully");
       } else {
         console.error("Failed to update task, status:", response.status);
       }
@@ -221,13 +399,170 @@
       console.error("Failed to update task:", error);
     }
   }
+
+  async function createQuickTask(status) {
+    const projectId = window.currentProjectId || "<%- currentProject ? currentProject._id : '' %>";
+    if (!projectId) {
+      alert('Cannot create task: no current project selected.');
+      return;
+    }
+
+    const title = window.prompt(`Enter a title for the new task in ${status.replace(/_/g, ' ')}:`);
+    if (!title || !title.trim()) return;
+
+    const data = {
+      title: title.trim(),
+      description: "Quick task created from board",
+      status,
+      priority: "low",
+      projectId
+    };
+
+    try {
+      const response = await fetch("/api/tasks", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+      });
+
+      if (response.ok) {
+        if (typeof Toastify !== "undefined") {
+          Toastify({ text: "Task added", duration: 3000, close: true, gravity: "top", position: "right", backgroundColor: "#22c55e" }).showToast();
+        }
+        location.reload();
+      } else {
+        console.error("Quick task create failed", response.status);
+        if (typeof Toastify !== "undefined") {
+          Toastify({ text: "Cannot create task", duration: 4000, close: true, gravity: "top", position: "right", backgroundColor: "#ef4444" }).showToast();
+        }
+      }
+    } catch (error) {
+      console.error("Quick task create error", error);
+    }
+  }
+
+  function getProjectIdFromNotificationLink(link) {
+    try {
+      const url = new URL(link, window.location.origin);
+      return url.searchParams.get('projectId');
+    } catch (error) {
+      console.error('Invalid notification link', error);
+      return null;
+    }
+  }
+
+  function acceptProjectInviteFromNotification(link) {
+    const projectId = getProjectIdFromNotificationLink(link);
+    if (!projectId) {
+      return alert('Invalid invite notification link.');
+    }
+    acceptProjectInvite(projectId);
+  }
+
+  function rejectProjectInviteFromNotification(link) {
+    const projectId = getProjectIdFromNotificationLink(link);
+    if (!projectId) {
+      return alert('Invalid invite notification link.');
+    }
+    rejectProjectInvite(projectId);
+  }
+
+  async function acceptProjectInvite(projectId) {
+    try {
+      const response = await fetch(`/api/projects/${projectId}/invite/accept`, {
+        method: 'PUT',
+        credentials: 'include'
+      });
+
+      if (response.ok) {
+        window.location.href = `/dashboard?projectId=${projectId}`;
+      } else {
+        const data = await response.json();
+        alert(data.message || 'Cannot accept invite.');
+      }
+    } catch (error) {
+      console.error('Accept invite error', error);
+      alert('Cannot accept invite.');
+    }
+  }
+
+  async function rejectProjectInvite(projectId) {
+    try {
+      const response = await fetch(`/api/projects/${projectId}/invite/reject`, {
+        method: 'PUT',
+        credentials: 'include'
+      });
+
+      if (response.ok) {
+        window.location.reload();
+      } else {
+        const data = await response.json();
+        alert(data.message || 'Cannot reject invite.');
+      }
+    } catch (error) {
+      console.error('Reject invite error', error);
+      alert('Cannot reject invite.');
+    }
+  }
+
+  async function cancelProjectInvite(projectId, invitedUserId) {
+    try {
+      const response = await fetch(`/api/projects/${projectId}/invite/cancel`, {
+        method: 'DELETE',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: invitedUserId })
+      });
+
+      if (response.ok) {
+        window.location.reload();
+      } else {
+        const data = await response.json();
+        alert(data.message || 'Cannot cancel invite.');
+      }
+    } catch (error) {
+      console.error('Cancel invite error', error);
+      alert('Cannot cancel invite.');
+    }
+  }
 </script>
+<script src="/js/socket-manager.js"></script>
+<script src="/js/board.js"></script>
+<div id="projectInviteModal" class="modal" style="display: none;">
+  <div class="modal-content">
+    <h3>Invite Member to Project</h3>
+    <form id="inviteMemberForm">
+      <div class="form-group">
+        <label>User Email:</label>
+        <input type="email" id="inviteEmail" name="email" placeholder="example@gmail.com" required class="form-control">
+      </div>
+      <div class="form-group">
+        <label>Permission:</label>
+        <select id="invitePermission" name="permission" class="form-control">
+          <option value="view">View</option>
+          <option value="comment">Comment</option>
+          <option value="admin">Admin</option>
+        </select>
+      </div>
+      <div class="modal-actions">
+        <button type="button" onclick="closeInviteModal()">Cancel</button>
+        <button type="submit" class="btn-primary">Send Invitation</button>
+      </div>
+    </form>
+  </div>
+</div>
 
 <script>
-  if (typeof joinProjectRoom === "function" && <%= currentProject ? 'true' : 'false' %>) {
-    console.log("Joining project room for:", <%= currentProject && currentProject._id %>);
-    joinProjectRoom(<%= currentProject && currentProject._id %>);
-  } else {
-    console.log("Not joining project room - no current project");
-  }
+  window.currentUserId = "<%= userId %>";
+  window.currentUserPermission = "<%= currentUserPermission %>";
+  window.currentUserIsOwner = <%= currentUserIsOwner ? 'true' : 'false' %>;
+  window.currentProjectId = "<%- currentProject ? currentProject._id : '' %>";
+  window.currentProjectWorkflow = <%- JSON.stringify(currentProject ? currentProject.workflow || [] : []) %>;
+  <% if (currentProject) { %>
+    window.currentProjectId = "<%- currentProject._id %>";
+    if (window.joinProjectRoom) {
+      window.joinProjectRoom("<%- currentProject._id %>");
+    }
+  <% } %>
 </script>

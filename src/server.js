@@ -13,7 +13,7 @@ const EXPRESS_PORT = process.env.PORT || 3000;
 // Express server
 const expressServer = http.createServer(app);
 expressServer.listen(EXPRESS_PORT, () => {
-  console.log(`Express server running on port ${EXPRESS_PORT}`);
+  console.log(`Express server running on port http://localhost:${EXPRESS_PORT}`);
 });
 
 const io = new Server(expressServer, {
@@ -35,16 +35,13 @@ io.on("connection", (socket) => {
     }
   });
 
-  socket.on("leave-project", (projectId) => {
-    if (projectId) {
-      socket.leave(`project-${projectId}`);
-      console.log(`User ${socket.id} left project room: project-${projectId}`);
-    }
-  });
+    socket.on("join-user", (userId) => {
+      if (userId) {
+        socket.join(`user-${userId}`);
+        console.log(`User ${socket.id} joined user room: user-${userId}`);
+      }
+    });
 
-  socket.on("disconnect", () => {
-    console.log("Socket disconnected:", socket.id);
-  });
 });
 
 app.set('io', io);

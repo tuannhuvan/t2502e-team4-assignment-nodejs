@@ -5,7 +5,7 @@ const schema = new mongoose.Schema({
   title: String,
   description: String,
 
-  status: { type: String, enum: ["todo", "in_progress", "done"] },
+  status: { type: String, default: "todo" },
   priority: { type: String, enum: ["low", "medium", "high"] },
 
   assignee: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
@@ -17,6 +17,12 @@ const schema = new mongoose.Schema({
   attachments: [{
     fileName: String,
     fileUrl: String
+  }],
+
+  members: [{
+    user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    status: { type: String, enum: ["pending", "accepted"], default: "pending" },
+    invitedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" }
   }],
 
   isDeleted: Boolean

@@ -3,14 +3,17 @@ const RefreshToken = require('../models/RefreshToken');
 const jwt = require('jsonwebtoken');
 const userService = require('./user.service');
 
+const JWT_SECRET = process.env.JWT_SECRET || 'taskflow_default_secret';
+const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET || 'taskflow_default_refresh_secret';
+
 // Generate Access Token (short-lived)
 const generateAccessToken = (userId) => {
-  return jwt.sign({ userId }, process.env.JWT_SECRET, { expiresIn: '15m' }); // 15 minutes
+  return jwt.sign({ userId }, JWT_SECRET, { expiresIn: '15m' }); // 15 minutes
 };
 
 // Generate Refresh Token (long-lived)
 const generateRefreshToken = (userId) => {
-  return jwt.sign({ userId }, process.env.JWT_REFRESH_SECRET, { expiresIn: '7d' }); // 7 days
+  return jwt.sign({ userId }, JWT_REFRESH_SECRET, { expiresIn: '7d' }); // 7 days
 };
 
 const register = async (req, res) => {
@@ -21,11 +24,13 @@ const register = async (req, res) => {
             return res.status(400).json({ message: 'All fields are required' });
         }
 
+        const normalizedEmail = email.toLowerCase().trim();
+
         if (password !== confirmPassword) {
             return res.status(400).json({ message: 'Passwords do not match' });
         }
 
-        const existingUser = await userService.getUserByEmail(email);
+        const existingUser = await userService.getUserByEmail(normalizedEmail);
         if (existingUser) {
             return res.status(400).json({ message: 'User already exists' });
         }
@@ -33,7 +38,7 @@ const register = async (req, res) => {
         // Password hashing is now handled automatically by the User model pre-save middleware
         await userService.createUser({
             fullName: name,
-            email,
+            email: normalizedEmail,
             password
         });
 
@@ -50,7 +55,13 @@ const register = async (req, res) => {
 const login = async (req, res) => {
     try {
         const { email, password } = req.body;
-        const existingUser = await User.findOne({ email }).select('+password');
+        const normalizedEmail = (email || '').toLowerCase().trim();
+
+        if (!normalizedEmail || !password) {
+            return res.status(400).json({ message: 'Email and password are required' });
+        }
+
+        const existingUser = await User.findOne({ email: normalizedEmail }).select('+password');
         if (!existingUser) {
             return res.status(400).json({ message: 'Invalid credentials' });
         }

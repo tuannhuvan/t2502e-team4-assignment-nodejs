@@ -25,6 +25,9 @@
   </script>
   
   <script src="/socket.io/socket.io.js"></script>
+  <script>
+    window.currentUserId = "<%= userId ? userId : '' %>";
+  </script>
   <script src="/js/socket-manager.js"></script>
   <!-- Toastify JS -->
   <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>

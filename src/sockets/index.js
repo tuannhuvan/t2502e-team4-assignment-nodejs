@@ -66,6 +66,13 @@ exports.initSocket = (server) => {
       }
     });
 
+    socket.on("join-user", (userId) => {
+      if (userId) {
+        socket.join(`user-${userId}`);
+        console.log(`User ${socket.id} joined user room: user-${userId}`);
+      }
+    });
+
     // Handle leave-project event (optional, for cleanup)
     socket.on("leave-project", (projectId) => {
       if (projectId) {
@@ -165,4 +172,20 @@ exports.emitToProject = (projectId, data) => {
     return;
   }
   io.to(`project-${projectId}`).emit("notification", data);
+};
+
+exports.emitToUser = (userId, data) => {
+  if (!io) {
+    console.warn("Socket.io not initialized. Notification not emitted.");
+    return;
+  }
+
+  // 1. Log để kiểm tra ID người nhận trên Terminal
+  console.log(`Emitting notification to user room: user-${userId}`);
+
+  // 2. Gửi đích danh vào room "user-[userId]"
+  io.to(`user-${userId}`).emit("notification", {
+    ...data,
+    timestamp: new Date()
+  });
 };
