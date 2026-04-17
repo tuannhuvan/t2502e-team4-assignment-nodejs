@@ -120,7 +120,7 @@ const refreshToken = async (req, res) => {
         }
 
         // Verify refresh token
-        const decoded = jwt.verify(token, process.env.JWT_REFRESH_SECRET);
+        const decoded = jwt.verify(token, JWT_REFRESH_SECRET);
 
         // Check if refresh token exists in database
         const storedToken = await RefreshToken.findOne({
